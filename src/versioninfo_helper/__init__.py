@@ -8,7 +8,6 @@ representation that PyInstaller can eval() and embed into your exe.
 
 from __future__ import annotations
 
-# native imports
 import sys
 from collections.abc import Sequence
 from datetime import datetime
@@ -16,7 +15,6 @@ from datetime import timezone
 from enum import IntEnum
 from enum import IntFlag
 
-# 3rd party imports
 from PyInstaller.utils.win32.versioninfo import FixedFileInfo
 from PyInstaller.utils.win32.versioninfo import StringFileInfo
 from PyInstaller.utils.win32.versioninfo import StringStruct
@@ -28,17 +26,15 @@ from PyInstaller.utils.win32.versioninfo import VSVersionInfo
 
 # Python 3.7 or higher
 if sys.version_info < (3, 7):
-    raise ImportError("This module is strictly typed and can't be used in Python <3.7!")
+    raise ImportError(
+        "This module is strictly typed and can't be used in Python <3.7!"
+    )
 
 # Python 3.8 or higher
 if sys.version_info >= (3, 8):
-    # native imports
     from typing import Final
-    from typing import TypedDict
 else:
-    # 3rd party imports
     from typing_extensions import Final
-    from typing_extensions import TypedDict
 
 # Python 3.9 or higher
 if sys.version_info >= (3, 9):
@@ -48,21 +44,23 @@ else:
 
 # Python 3.10 or higher
 if sys.version_info >= (3, 10):
-    # native imports
     from typing import TypeAlias
 else:
-    # 3rd party imports
     from typing_extensions import TypeAlias
 
 # Python 3.11 or higher
 if sys.version_info >= (3, 11):
-    # native imports
     from typing import NotRequired
     from typing import Required
 else:
-    # 3rd party imports
     from typing_extensions import NotRequired
     from typing_extensions import Required
+
+# Python 3.15 or higher
+if sys.version_info >= (3, 15):
+    from typing import TypedDict
+else:
+    from typing_extensions import TypedDict
 
 
 # ==============================================================================
@@ -98,7 +96,9 @@ def filetime_to_datetime(filetime: int) -> datetime:
     # Get seconds and remainder in terms of Unix epoch
     s, ns100 = divmod(filetime - EPOCH_AS_FILETIME, HUNDREDS_OF_NS)
     # Convert to datetime object, with remainder as microseconds.
-    return datetime.fromtimestamp(s, timezone.utc).replace(microsecond=(ns100 // 10))
+    return datetime.fromtimestamp(s, timezone.utc).replace(
+        microsecond=(ns100 // 10)
+    )
 
 
 # ------------------------------------------------------------------------------
@@ -951,7 +951,12 @@ class CharsetCode(IntEnum):
 # ==============================================================================
 
 
-class StringFileInfo_Dict(TypedDict, total=False):
+# waiting for all type checkers to support PEP 728
+class StringFileInfo_Dict(  # type: ignore[call-arg]
+    TypedDict,
+    total=False,
+    extra_items=str,  # pyright: ignore[reportGeneralTypeIssues]  # PEP 728
+):
     """
     TypedDict with all recommended keys for StringFileInfo.
     Additional keys are allowed and will get embedded into VersionInfo.
@@ -1050,7 +1055,7 @@ def create_StringFileInfo_table(
     for key, value in additional_strings.items():
         kids.append(StringStruct(key, value))
     # create Table
-    return StringTable(name, kids)
+    return StringTable(name, [*kids])
 
 
 # ------------------------------------------------------------------------------
@@ -1147,7 +1152,7 @@ def create_VersionInfo(
 
         The operating system for which this file was designed.
         This member can be one of the values defined in enum `FileOS`.
-        Default: `FileOS.VOS_NT_WINDOWS3` (0x00040004)
+        Default: `FileOS.VOS_NT_WINDOWS32` (0x00040004)
 
     ---
 
@@ -1208,24 +1213,25 @@ def create_VersionInfo(
     assert all(0 <= i < 2**16 for i in dwProductVersion_tuple)
 
     if mask is None:
-        mask = int(FileFlags.VS_FFI_FILEFLAGSMASK)
-    dwFileFlagsMask: Final = mask
+        mask = FileFlags.VS_FFI_FILEFLAGSMASK
+    dwFileFlagsMask: Final = int(mask)
 
     if flags is None:
-        flags = int(FileFlags.VS_FF_None)
-    dwFileFlags: Final = flags
+        flags = FileFlags.VS_FF_None
+    dwFileFlags: Final = int(flags)
 
-    if OS is None:
-        OS = int(FileOS.VOS_NT_WINDOWS32)
-    dwFileOS: Final = OS
+    _os: FileOS | int | None = OS
+    if _os is None:
+        _os = FileOS.VOS_NT_WINDOWS32
+    dwFileOS: Final = int(_os)
 
     if fileType is None:
-        fileType = int(FileType.VFT_APP)
-    dwFileType: Final = fileType
+        fileType = FileType.VFT_APP
+    dwFileType: Final = int(fileType)
 
     if subtype is None:
-        subtype = int(FileSubtype.VFT2_UNKNOWN)
-    dwFileSubtype: Final = subtype
+        subtype = FileSubtype.VFT2_UNKNOWN
+    dwFileSubtype: Final = int(subtype)
 
     if date is None:
         date = datetime_to_filetime_tuple(datetime.now(timezone.utc))
@@ -1256,7 +1262,7 @@ def create_VersionInfo(
                 create_StringFileInfo_table(
                     lang_id=lang_id,
                     charset_id=charset_id,
-                    **fields,
+                    **fields,  # pyright: ignore[reportArgumentType]  # PEP 728
                 )
             )
             var_infos.append(
@@ -1266,13 +1272,13 @@ def create_VersionInfo(
                 )
             )
         kids = [
-            VarFileInfo(var_infos),
-            StringFileInfo(string_infos),
+            VarFileInfo([*var_infos]),
+            StringFileInfo([*string_infos]),
         ]
 
     return VSVersionInfo(
         ffi=ffi,
-        kids=kids,
+        kids=[*kids],
     )
 
 
