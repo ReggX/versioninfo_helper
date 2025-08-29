@@ -1,10 +1,10 @@
-'''
+"""
 Helper Script to generate VSVersionInfo for PyInstaller.
 
 Either use VSVersionInfo object created by create_VersionInfo(...) directly
 in spec file or write to file with str(VSVersionInfo object) to get a
 representation that PyInstaller can eval() and embed into your exe.
-'''
+"""
 
 from __future__ import annotations
 
@@ -28,9 +28,7 @@ from PyInstaller.utils.win32.versioninfo import VSVersionInfo
 
 # Python 3.7 or higher
 if sys.version_info < (3, 7):
-    raise ImportError(
-        "This module is strictly typed and can't be used in Python <3.7!"
-    )
+    raise ImportError("This module is strictly typed and can't be used in Python <3.7!")
 
 # Python 3.8 or higher
 if sys.version_info >= (3, 8):
@@ -86,6 +84,8 @@ def datetime_to_filetime(dt: datetime) -> int:
 
     filetime = EPOCH_AS_FILETIME + (int(dt.timestamp()) * HUNDREDS_OF_NS)
     return filetime + (dt.microsecond * 10)
+
+
 # ------------------------------------------------------------------------------
 
 
@@ -98,10 +98,9 @@ def filetime_to_datetime(filetime: int) -> datetime:
     # Get seconds and remainder in terms of Unix epoch
     s, ns100 = divmod(filetime - EPOCH_AS_FILETIME, HUNDREDS_OF_NS)
     # Convert to datetime object, with remainder as microseconds.
-    return (
-        datetime.fromtimestamp(s, timezone.utc)
-        .replace(microsecond=(ns100 // 10))
-    )
+    return datetime.fromtimestamp(s, timezone.utc).replace(microsecond=(ns100 // 10))
+
+
 # ------------------------------------------------------------------------------
 
 
@@ -113,6 +112,8 @@ def datetime_to_filetime_tuple(dt: datetime) -> tuple[int, int]:
 
     filetime: int = datetime_to_filetime(dt)
     return (filetime >> 32, filetime & 0xFFFFFFFF)
+
+
 # ------------------------------------------------------------------------------
 
 
@@ -125,68 +126,70 @@ def datetime_to_filetime_tuple(dt: datetime) -> tuple[int, int]:
 
 
 class FileFlags(IntFlag):
-    '''
+    """
     Contains a bitmask that specifies the Boolean attributes of the file.
     This member can include one or more of the following values.
 
     https://docs.microsoft.com/en-us/windows/win32/menurc/versioninfo-resource
     https://docs.microsoft.com/en-us/windows/win32/api/verrsrc/ns-verrsrc-vs_fixedfileinfo
-    '''
+    """
 
     VS_FF_None = 0x00000000  # not a real value in verrsrc.h
-    '''
+    """
     Indicates that no FileFlags apply.
     Not a real value in verrsrc.h
-    '''
+    """
 
     VS_FF_DEBUG = 0x00000001
-    '''
+    """
     The file contains debugging information or is compiled with debugging
     features enabled.
-    '''
+    """
 
     VS_FF_INFOINFERRED = 0x00000010
-    '''
+    """
     The file's version structure was created dynamically;
     therefore, some of the members in this structure may be empty or incorrect.
     This flag should never be set in a file's VS_VERSIONINFO data.
-    '''
+    """
 
     VS_FF_PATCHED = 0x00000004
-    '''
+    """
     The file has been modified and is not identical to the original shipping
     file of the same version number.
-    '''
+    """
 
     VS_FF_PRERELEASE = 0x00000002
-    '''
+    """
     The file is a development version, not a commercially released product.
-    '''
+    """
 
     VS_FF_PRIVATEBUILD = 0x00000008
-    '''
+    """
     The file was not built using standard release procedures.
     If this flag is set, the StringFileInfo structure should contain a
     PrivateBuild entry.
-    '''
+    """
 
     VS_FF_SPECIALBUILD = 0x00000020
-    '''
+    """
     The file was built by the original company using standard release procedures
     but is a variation of the normal file of the same version number.
     If this flag is set, the StringFileInfo structure should contain a
     SpecialBuild entry.
-    '''
+    """
 
     VS_FFI_FILEFLAGSMASK = 0x0000003F
-    '''
+    """
     A combination (bitmask) of all valid Flags in FileFlags
-    '''
+    """
+
+
 # ------------------------------------------------------------------------------
 
 
 class FileOS(IntFlag):
-    '''
+    """
     The operating system for which this file was designed.
     This member can be one of the following values.
 
@@ -196,143 +199,147 @@ class FileOS(IntFlag):
 
     https://docs.microsoft.com/en-us/windows/win32/menurc/versioninfo-resource
     https://docs.microsoft.com/en-us/windows/win32/api/verrsrc/ns-verrsrc-vs_fixedfileinfo
-    '''
+    """
 
     VOS_UNKNOWN = 0x00000000
-    '''
+    """
     The operating system for which the file was designed is unknown.
-    '''
+    """
 
     VOS_DOS = 0x00010000
-    '''
+    """
     File was designed for MS-DOS.
-    '''
+    """
 
     VOS_OS216 = 0x00020000
-    '''
+    """
     The file was designed for 16-bit OS/2.
-    '''
+    """
 
     VOS_OS232 = 0x00030000
-    '''
+    """
     The file was designed for 32-bit OS/2.
-    '''
+    """
 
     VOS_NT = 0x00040000
-    '''
+    """
     File was designed for modern 32-bit Windows.
-    '''
+    """
 
     VOS_WINCE = 0x00050000
-    '''
+    """
     TODO: Add missing documentation
-    '''
+    """
 
     VOS__BASE = 0x00000000
-    '''
+    """
     TODO: Add missing documentation
-    '''
+    """
 
     VOS__WINDOWS16 = 0x00000001
-    '''
+    """
     File was designed for 16-bit Windows.
-    '''
+    """
 
     VOS__PM16 = 0x00000002
-    '''
+    """
     The file was designed for 16-bit Presentation Manager.
-    '''
+    """
 
     VOS__PM32 = 0x00000003
-    '''
+    """
     The file was designed for 32-bit Presentation Manager.
-    '''
+    """
 
     VOS__WINDOWS32 = 0x00000004
-    '''
+    """
     File was designed for 32-bit Windows.
-    '''
+    """
 
     VOS_DOS_WINDOWS16 = 0x00010001
-    '''
+    """
     File was designed for 16-bit Windows running with MS-DOS.
-    '''
+    """
 
     VOS_DOS_WINDOWS32 = 0x00010004
-    '''
+    """
     File was designed for 32-bit Windows running with MS-DOS.
-    '''
+    """
 
     VOS_OS216_PM16 = 0x00020002
-    '''
+    """
     The file was designed for 16-bit Presentation Manager running on
     16-bit OS/2.
-    '''
+    """
 
     VOS_OS232_PM32 = 0x00030003
-    '''
+    """
     The file was designed for 32-bit Presentation Manager running on
     32-bit OS/2.
-    '''
+    """
 
     VOS_NT_WINDOWS32 = 0x00040004
-    '''
+    """
     File was designed for modern 32-bit Windows.
-    '''
+    """
+
+
 # ------------------------------------------------------------------------------
 
 
 class FileType(IntFlag):
-    '''
+    """
     The general type of file.
     This member can be one of the following values.
     All other values are reserved.
 
     https://docs.microsoft.com/en-us/windows/win32/menurc/versioninfo-resource
     https://docs.microsoft.com/en-us/windows/win32/api/verrsrc/ns-verrsrc-vs_fixedfileinfo
-    '''
+    """
 
     VFT_UNKNOWN = 0x00000000
-    '''
+    """
     The file type is unknown to the system.
-    '''
+    """
 
     VFT_APP = 0x00000001
-    '''
+    """
     The file contains an application.
-    '''
+    """
 
     VFT_DLL = 0x00000002
-    '''
+    """
     The file contains a DLL.
-    '''
+    """
 
     VFT_DRV = 0x00000003
-    '''
+    """
     The file contains a device driver. If dwFileType is VFT_DRV,
     dwFileSubtype contains a more specific description of the driver.
-    '''
+    """
 
     VFT_FONT = 0x00000004
-    '''
+    """
     The file contains a font. If dwFileType is VFT_FONT,
     dwFileSubtype contains a more specific description of the font file.
-    '''
+    """
 
     VFT_VXD = 0x00000005
-    '''
+    """
     The file contains a virtual device.
-    '''
+    """
 
     VFT_STATIC_LIB = 0x00000007
-    '''
+    """
     The file contains a static-link library.
-    '''
+    """
+
+
 # ------------------------------------------------------------------------------
 
 
 class FileSubtype(IntFlag):
-    '''
+    """
     The function of the file.
     The possible values depend on the value of dwFileType.
     For all values of dwFileType not described in the following list,
@@ -340,92 +347,94 @@ class FileSubtype(IntFlag):
 
     https://docs.microsoft.com/en-us/windows/win32/menurc/versioninfo-resource
     https://docs.microsoft.com/en-us/windows/win32/api/verrsrc/ns-verrsrc-vs_fixedfileinfo
-    '''
+    """
 
     VFT2_UNKNOWN = 0x00000000
-    '''
+    """
     The driver type is unknown by the system.
-    '''
+    """
 
     VFT2_DRV_PRINTER = 0x00000001
-    '''
+    """
     The file contains a printer driver.
-    '''
+    """
 
     VFT2_DRV_KEYBOARD = 0x00000002
-    '''
+    """
     The file contains a keyboard driver.
-    '''
+    """
 
     VFT2_DRV_LANGUAGE = 0x00000003
-    '''
+    """
     The file contains a language driver.
-    '''
+    """
 
     VFT2_DRV_DISPLAY = 0x00000004
-    '''
+    """
     The file contains a display driver.
-    '''
+    """
 
     VFT2_DRV_MOUSE = 0x00000005
-    '''
+    """
     The file contains a mouse driver.
-    '''
+    """
 
     VFT2_DRV_NETWORK = 0x00000006
-    '''
+    """
     The file contains a network driver.
-    '''
+    """
 
     VFT2_DRV_SYSTEM = 0x00000007
-    '''
+    """
     The file contains a system driver.
-    '''
+    """
 
     VFT2_DRV_INSTALLABLE = 0x00000008
-    '''
+    """
     The file contains an installable driver.
-    '''
+    """
 
     VFT2_DRV_SOUND = 0x00000009
-    '''
+    """
     The file contains a sound driver.
-    '''
+    """
 
     VFT2_DRV_COMM = 0x0000000A
-    '''
+    """
     The file contains a communications driver.
-    '''
+    """
 
     VFT2_DRV_INPUTMETHOD = 0x0000000B
-    '''
+    """
     TODO: Add missing documentation
-    '''
+    """
 
     VFT2_DRV_VERSIONED_PRINTER = 0x0000000C
-    '''
+    """
     The file contains a versioned printer driver.
-    '''
+    """
 
     VFT2_FONT_RASTER = 0x00000001
-    '''
+    """
     The file contains a raster font.
-    '''
+    """
 
     VFT2_FONT_VECTOR = 0x00000002
-    '''
+    """
     The file contains a vector font.
-    '''
+    """
 
     VFT2_FONT_TRUETYPE = 0x00000003
-    '''
+    """
     The file contains a TrueType font.
-    '''
+    """
+
+
 # ------------------------------------------------------------------------------
 
 
 class LanguageID(IntEnum):
-    '''
+    """
     Containts constants for the language IDs.
 
     For the long names, see the Remarks section of the following link:
@@ -438,7 +447,8 @@ class LanguageID(IntEnum):
 
     If your desired language is not included in this class, then you should
     still be able to use the raw integer value whereever this class is used.
-    '''
+    """
+
     # Long names
     # https://docs.microsoft.com/en-us/windows/win32/menurc/stringfileinfo-block
     Arabic = 0x0401
@@ -903,11 +913,13 @@ class LanguageID(IntEnum):
     TAG__ff_Latn = 0x7C67
     TAG__ha_Latn = 0x7C68
     TAG__ku_Arab = 0x7C92
+
+
 # ------------------------------------------------------------------------------
 
 
 class CharsetCode(IntEnum):
-    '''
+    """
     Containts constants for the charset identifiers.
 
     See the Remarks section of the following link:
@@ -915,7 +927,8 @@ class CharsetCode(IntEnum):
 
     If your desired charset is not included in this class, then you should
     still be able to use the raw integer value whereever this class is used.
-    '''
+    """
+
     ASCII = 0x0000
     Japan = 0x03A4
     Korea = 0x03B5
@@ -928,6 +941,8 @@ class CharsetCode(IntEnum):
     Turkish = 0x04E6
     Hebrew = 0x04E7
     Arabic = 0x04E8
+
+
 # ------------------------------------------------------------------------------
 
 
@@ -935,11 +950,13 @@ class CharsetCode(IntEnum):
 # ===== Type classes used in arguments of create_VersionInfo() =================
 # ==============================================================================
 
+
 class StringFileInfo_Dict(TypedDict, total=False):
-    '''
+    """
     TypedDict with all recommended keys for StringFileInfo.
     Additional keys are allowed and will get embedded into VersionInfo.
-    '''
+    """
+
     Comments: NotRequired[str]
     CompanyName: NotRequired[str]
     FileDescription: NotRequired[str]
@@ -952,25 +969,31 @@ class StringFileInfo_Dict(TypedDict, total=False):
     ProductName: NotRequired[str]
     ProductVersion: NotRequired[str]
     SpecialBuild: NotRequired[str]
+
+
 # ------------------------------------------------------------------------------
 
 
 class VersionInfo_Strings_Dict(TypedDict):
-    '''
+    """
     TypedDict with all required keys for VersionInfo strings block.
-    '''
+    """
+
     lang_id: Required[LanguageID | int]
     charset_id: Required[LanguageID | int]
     fields: Required[StringFileInfo_Dict]
+
+
 # ------------------------------------------------------------------------------
 
 
-VersionTuple: TypeAlias = 'tuple[int, int, int, int]'
+VersionTuple: TypeAlias = "tuple[int, int, int, int]"
 
 
 # ==============================================================================
 # ===== Functions ==============================================================
 # ==============================================================================
+
 
 def create_StringFileInfo_table(
     lang_id: LanguageID | int,
@@ -990,37 +1013,37 @@ def create_StringFileInfo_table(
     SpecialBuild: str | None = None,
     **additional_strings: str,
 ) -> StringTable:
-    '''
+    """
     Create a StringTable for the StringFileInfo block.
-    '''
+    """
     # Table name
     name: str = f"{int(lang_id):04X}{int(charset_id):04X}"
     # Table entries
     kids: list[StringStruct] = []
     if Comments is not None:
-        kids.append(StringStruct('Comments', Comments))
+        kids.append(StringStruct("Comments", Comments))
     if CompanyName is not None:
-        kids.append(StringStruct('CompanyName', CompanyName))
+        kids.append(StringStruct("CompanyName", CompanyName))
     if FileDescription is not None:
-        kids.append(StringStruct('FileDescription', FileDescription))
+        kids.append(StringStruct("FileDescription", FileDescription))
     if FileVersion is not None:
-        kids.append(StringStruct('FileVersion', FileVersion))
+        kids.append(StringStruct("FileVersion", FileVersion))
     if InternalName is not None:
-        kids.append(StringStruct('InternalName', InternalName))
+        kids.append(StringStruct("InternalName", InternalName))
     if LegalCopyright is not None:
-        kids.append(StringStruct('LegalCopyright', LegalCopyright))
+        kids.append(StringStruct("LegalCopyright", LegalCopyright))
     if LegalTrademarks is not None:
-        kids.append(StringStruct('LegalTrademarks', LegalTrademarks))
+        kids.append(StringStruct("LegalTrademarks", LegalTrademarks))
     if OriginalFilename is not None:
-        kids.append(StringStruct('OriginalFilename', OriginalFilename))
+        kids.append(StringStruct("OriginalFilename", OriginalFilename))
     if PrivateBuild is not None:
-        kids.append(StringStruct('PrivateBuild', PrivateBuild))
+        kids.append(StringStruct("PrivateBuild", PrivateBuild))
     if ProductName is not None:
-        kids.append(StringStruct('ProductName', ProductName))
+        kids.append(StringStruct("ProductName", ProductName))
     if ProductVersion is not None:
-        kids.append(StringStruct('ProductVersion', ProductVersion))
+        kids.append(StringStruct("ProductVersion", ProductVersion))
     if SpecialBuild is not None:
-        kids.append(StringStruct('SpecialBuild', SpecialBuild))
+        kids.append(StringStruct("SpecialBuild", SpecialBuild))
     # We could have just used **fields and save ourselves a lot of similar code,
     # but then we wouldn't have the expected keyword arguments that are useful
     # when it comes to auto-completion.
@@ -1028,17 +1051,19 @@ def create_StringFileInfo_table(
         kids.append(StringStruct(key, value))
     # create Table
     return StringTable(name, kids)
+
+
 # ------------------------------------------------------------------------------
 
 
 def create_VarStruct(
     lang_id: LanguageID | int,
     charset_id: CharsetCode | int,
-    *additional_pairs: tuple[LanguageID | int, CharsetCode | int]
+    *additional_pairs: tuple[LanguageID | int, CharsetCode | int],
 ) -> VarStruct:
-    '''
+    """
     Create VarStruct for the VarFileInfo block.
-    '''
+    """
     # Table name
     name: str = "Translation"
     # Table entries
@@ -1059,6 +1084,8 @@ def create_VarStruct(
     for lid, cid in additional_pairs:
         kids.extend([int(lid), int(cid)])
     return VarStruct(name, kids)
+
+
 # ------------------------------------------------------------------------------
 
 
@@ -1073,7 +1100,7 @@ def create_VersionInfo(
     date: datetime | tuple[int, int] | None = None,
     strings: Sequence[VersionInfo_Strings_Dict] | None = None,
 ) -> VSVersionInfo:
-    '''
+    """
     Create a VSVersionInfo instance with data provided in arguments.
 
     Arguments:
@@ -1164,13 +1191,13 @@ def create_VersionInfo(
         + `fields`: {str: str} dict mapping StringStruct names to values, see
             `StringFileInfo_Dict`
 
-    '''
+    """
     if filevers is None:
         filevers = (
             0,  # 16 bit uint, e.g. SemVer MAJOR
             0,  # 16 bit uint, e.g. SemVer MINOR
             0,  # 16 bit uint, e.g. SemVer PATCH
-            0   # 16 bit uint, Optional, leave as 0 if unused
+            0,  # 16 bit uint, Optional, leave as 0 if unused
         )
     dwFileVersion_tuple: VersionTuple = filevers
     assert all(0 <= i < 2**16 for i in dwFileVersion_tuple)
@@ -1222,18 +1249,22 @@ def create_VersionInfo(
         string_infos: list[StringTable] = []
         var_infos: list[VarStruct] = []
         for info in strings:
-            lang_id: int = int(info['lang_id'])
-            charset_id: int = int(info['charset_id'])
-            fields: StringFileInfo_Dict = info['fields']
-            string_infos.append(create_StringFileInfo_table(
-                lang_id=lang_id,
-                charset_id=charset_id,
-                **fields,
-            ))
-            var_infos.append(create_VarStruct(
-                lang_id=lang_id,
-                charset_id=charset_id,
-            ))
+            lang_id: int = int(info["lang_id"])
+            charset_id: int = int(info["charset_id"])
+            fields: StringFileInfo_Dict = info["fields"]
+            string_infos.append(
+                create_StringFileInfo_table(
+                    lang_id=lang_id,
+                    charset_id=charset_id,
+                    **fields,
+                )
+            )
+            var_infos.append(
+                create_VarStruct(
+                    lang_id=lang_id,
+                    charset_id=charset_id,
+                )
+            )
         kids = [
             VarFileInfo(var_infos),
             StringFileInfo(string_infos),
@@ -1243,4 +1274,6 @@ def create_VersionInfo(
         ffi=ffi,
         kids=kids,
     )
+
+
 # ------------------------------------------------------------------------------
