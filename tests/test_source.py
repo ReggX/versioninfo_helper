@@ -1,103 +1,150 @@
+import datetime as dt
 import re
 
-import pytest
-import versioninfo_helper
-import datetime
+
+# ------------------------------------------------------------------------------
 
 
-def test_datetime_to_filetime() -> None:
-    # Test known value: 2020-01-01 00:00:00 UTC
-    dt = datetime.datetime(2020, 1, 1, 0, 0, 0, tzinfo=datetime.timezone.utc)
-    filetime = versioninfo_helper.datetime_to_filetime(dt)
+def test_datetime_to_filetime_known_value() -> None:
+    from versioninfo_helper import datetime_to_filetime
+
+    dt_ = dt.datetime(2020, 1, 1, 0, 0, 0, tzinfo=dt.timezone.utc)
+    filetime: int = datetime_to_filetime(dt_)
     assert filetime == 132223104000000000
 
-    # Test naive datetime (assumed to be in local timezone)
-    dt_naive = datetime.datetime(2020, 1, 1, 0, 0, 0)
-    filetime_naive = versioninfo_helper.datetime_to_filetime(dt_naive)
-    assert isinstance(filetime_naive, int)
 
-    # Test with different timezone
-    dt_tz = datetime.datetime(
+# ------------------------------------------------------------------------------
+
+
+def test_datetime_to_filetime_naive() -> None:
+    from versioninfo_helper import datetime_to_filetime
+
+    dt_naive = dt.datetime(2020, 1, 1, 0, 0, 0)
+    filetime_naive: int = datetime_to_filetime(dt_naive)
+    assert isinstance(filetime_naive, int)
+    assert filetime_naive == 132223104000000000
+
+
+# ------------------------------------------------------------------------------
+
+
+def test_datetime_to_filetime_different_timezone() -> None:
+    from versioninfo_helper import datetime_to_filetime
+
+    dt_tz = dt.datetime(
         2020,
         1,
         1,
         0,
         0,
         0,
-        tzinfo=datetime.timezone(datetime.timedelta(hours=-5)),
+        tzinfo=dt.timezone(dt.timedelta(hours=-5)),
     )
-    filetime_tz = versioninfo_helper.datetime_to_filetime(dt_tz)
+    filetime_tz: int = datetime_to_filetime(dt_tz)
     assert isinstance(filetime_tz, int)
-    assert filetime_tz != filetime
+    assert filetime_tz == 132223284000000000
 
 
-def test_filetime_to_datetime() -> None:
-    # Test known value: 2020-01-01 00:00:00 UTC
+# ------------------------------------------------------------------------------
+
+
+def test_filetime_to_datetime_known_value() -> None:
+    from versioninfo_helper import filetime_to_datetime
+
     filetime = 132223104000000000
-    dt = versioninfo_helper.filetime_to_datetime(filetime)
-    assert dt == datetime.datetime(
-        2020, 1, 1, 0, 0, 0, tzinfo=datetime.timezone.utc
-    )
+    dt_: dt.datetime = filetime_to_datetime(filetime)
+    assert dt_ == dt.datetime(2020, 1, 1, 0, 0, 0, tzinfo=dt.timezone.utc)
 
-    # Test round-trip conversion
-    original_dt = datetime.datetime(
-        2022, 5, 15, 12, 30, 45, tzinfo=datetime.timezone.utc
-    )
-    filetime_rt = versioninfo_helper.datetime_to_filetime(original_dt)
-    dt_rt = versioninfo_helper.filetime_to_datetime(filetime_rt)
+
+# ------------------------------------------------------------------------------
+
+
+def test_filetime_to_datetime_round_trip() -> None:
+    from versioninfo_helper import datetime_to_filetime
+    from versioninfo_helper import filetime_to_datetime
+
+    original_dt = dt.datetime(2022, 5, 15, 12, 30, 45, tzinfo=dt.timezone.utc)
+    filetime_rt: int = datetime_to_filetime(original_dt)
+    dt_rt: dt.datetime = filetime_to_datetime(filetime_rt)
     assert dt_rt == original_dt
 
-    # Test with different timezone
-    original_dt_tz = datetime.datetime(
+
+# ------------------------------------------------------------------------------
+
+
+def test_filetime_to_datetime_different_timezone() -> None:
+    from versioninfo_helper import datetime_to_filetime
+    from versioninfo_helper import filetime_to_datetime
+
+    original_dt_tz = dt.datetime(
         2022,
         5,
         15,
         12,
         30,
         45,
-        tzinfo=datetime.timezone(datetime.timedelta(hours=3)),
+        tzinfo=dt.timezone(dt.timedelta(hours=3)),
     )
-    filetime_tz = versioninfo_helper.datetime_to_filetime(original_dt_tz)
-    dt_tz = versioninfo_helper.filetime_to_datetime(filetime_tz)
-    assert dt_tz == original_dt_tz.astimezone(datetime.timezone.utc)
+    filetime_tz: int = datetime_to_filetime(original_dt_tz)
+    dt_tz: dt.datetime = filetime_to_datetime(filetime_tz)
+    assert dt_tz == original_dt_tz.astimezone(dt.timezone.utc)
 
 
-def test_datetime_to_filetime_tuple() -> None:
-    # Test known value: 2020-01-01 00:00:00 UTC
-    dt = datetime.datetime(2020, 1, 1, 0, 0, 0, tzinfo=datetime.timezone.utc)
-    filetime_tuple = versioninfo_helper.datetime_to_filetime_tuple(dt)
-    assert filetime_tuple == (30785590, 1761935360)  # Low and high parts
+# ------------------------------------------------------------------------------
 
-    # Test naive datetime (assumed to be in local timezone)
-    dt_naive = datetime.datetime(2020, 1, 1, 0, 0, 0)
-    filetime_tuple_naive = versioninfo_helper.datetime_to_filetime_tuple(
-        dt_naive
-    )
+
+def test_datetime_to_filetime_tuple_known_value() -> None:
+    from versioninfo_helper import datetime_to_filetime_tuple
+
+    dt_ = dt.datetime(2020, 1, 1, 0, 0, 0, tzinfo=dt.timezone.utc)
+    filetime_tuple: tuple[int, int] = datetime_to_filetime_tuple(dt_)
+    assert filetime_tuple == (30785590, 1761935360)
+
+
+# ------------------------------------------------------------------------------
+
+
+def test_datetime_to_filetime_tuple_naive() -> None:
+    from versioninfo_helper import datetime_to_filetime_tuple
+
+    dt_naive = dt.datetime(2020, 1, 1, 0, 0, 0)
+    filetime_tuple_naive: tuple[int, int] = datetime_to_filetime_tuple(dt_naive)
     assert isinstance(filetime_tuple_naive, tuple)
     assert len(filetime_tuple_naive) == 2
 
-    # Test with different timezone
-    dt_tz = datetime.datetime(
+
+# ------------------------------------------------------------------------------
+
+
+def test_datetime_to_filetime_tuple_different_timezone() -> None:
+    from versioninfo_helper import datetime_to_filetime_tuple
+
+    dt_tz = dt.datetime(
         2020,
         1,
         1,
         0,
         0,
         0,
-        tzinfo=datetime.timezone(datetime.timedelta(hours=-5)),
+        tzinfo=dt.timezone(dt.timedelta(hours=-5)),
     )
-    filetime_tuple_tz = versioninfo_helper.datetime_to_filetime_tuple(dt_tz)
+    filetime_tuple_tz: tuple[int, int] = datetime_to_filetime_tuple(dt_tz)
     assert isinstance(filetime_tuple_tz, tuple)
     assert len(filetime_tuple_tz) == 2
-    assert filetime_tuple_tz != filetime_tuple
 
 
-def test_create_StringFileInfo_table() -> None:
+# ------------------------------------------------------------------------------
+
+
+def test_create_StringFileInfo_table_empty() -> None:
     from PyInstaller.utils.win32.versioninfo import StringTable
 
-    st = versioninfo_helper.create_StringFileInfo_table(
-        versioninfo_helper.LanguageID.US_English,
-        versioninfo_helper.CharsetCode.Unicode,
+    from versioninfo_helper import CharsetCode
+    from versioninfo_helper import LanguageID
+    from versioninfo_helper import create_StringFileInfo_table
+
+    st: StringTable = create_StringFileInfo_table(
+        LanguageID.US_English, CharsetCode.Unicode
     )
     assert isinstance(st, StringTable)
     expected = """StringTable(
@@ -105,9 +152,20 @@ def test_create_StringFileInfo_table() -> None:
   [])"""
     assert str(st) == expected
 
-    st = versioninfo_helper.create_StringFileInfo_table(
-        versioninfo_helper.LanguageID.Greek,
-        versioninfo_helper.CharsetCode.ASCII,
+
+# ------------------------------------------------------------------------------
+
+
+def test_create_StringFileInfo_table_with_fields() -> None:
+    from PyInstaller.utils.win32.versioninfo import StringTable
+
+    from versioninfo_helper import CharsetCode
+    from versioninfo_helper import LanguageID
+    from versioninfo_helper import create_StringFileInfo_table
+
+    st: StringTable = create_StringFileInfo_table(
+        LanguageID.Greek,
+        CharsetCode.ASCII,
         Comments="Comments",
         CompanyName="CompanyName",
         FileDescription="FileDescription",
@@ -141,34 +199,51 @@ def test_create_StringFileInfo_table() -> None:
     assert str(st) == expected
 
 
-def test_create_VarStruct() -> None:
+# ------------------------------------------------------------------------------
+
+
+def test_create_VarStruct_single_translation() -> None:
     from PyInstaller.utils.win32.versioninfo import VarStruct
 
-    vs = versioninfo_helper.create_VarStruct(
-        versioninfo_helper.LanguageID.US_English,
-        versioninfo_helper.CharsetCode.Unicode,
-    )
+    from versioninfo_helper import CharsetCode
+    from versioninfo_helper import LanguageID
+    from versioninfo_helper import create_VarStruct
+
+    vs: VarStruct = create_VarStruct(LanguageID.US_English, CharsetCode.Unicode)
     assert isinstance(vs, VarStruct)
     expected = """VarStruct('Translation', [1033, 1200])"""
     assert str(vs) == expected
 
-    vs = versioninfo_helper.create_VarStruct(
-        versioninfo_helper.LanguageID.Greek,
-        versioninfo_helper.CharsetCode.ASCII,
-        (
-            versioninfo_helper.LanguageID.Japanese,
-            versioninfo_helper.CharsetCode.Japan,
-        ),
+
+# ------------------------------------------------------------------------------
+
+
+def test_create_VarStruct_multiple_translations() -> None:
+    from PyInstaller.utils.win32.versioninfo import VarStruct
+
+    from versioninfo_helper import CharsetCode
+    from versioninfo_helper import LanguageID
+    from versioninfo_helper import create_VarStruct
+
+    vs: VarStruct = create_VarStruct(
+        LanguageID.Greek,
+        CharsetCode.ASCII,
+        (LanguageID.Japanese, CharsetCode.Japan),
     )
     assert isinstance(vs, VarStruct)
     expected = """VarStruct('Translation', [1032, 0, 1041, 932])"""
     assert str(vs) == expected
 
 
-def test_create_VersionInfo() -> None:
+# ------------------------------------------------------------------------------
+
+
+def test_create_VersionInfo_empty() -> None:
     from PyInstaller.utils.win32.versioninfo import VSVersionInfo
 
-    vi = versioninfo_helper.create_VersionInfo()
+    from versioninfo_helper import create_VersionInfo
+
+    vi: VSVersionInfo = create_VersionInfo()
     assert isinstance(vi, VSVersionInfo)
     expected = """# UTF-8
 #
@@ -200,10 +275,19 @@ VSVersionInfo(
 
   ]
 )"""
-    vi = re.sub(r"date=\(\d+, \d+\)", "date=(0, 0)", str(vi))
-    assert str(vi) == expected
+    vi_str: str = re.sub(r"date=\(\d+, \d+\)", "date=(0, 0)", str(vi))
+    assert vi_str == expected
 
-    vi = versioninfo_helper.create_VersionInfo(date=(30785590, 1761935360))
+
+# ------------------------------------------------------------------------------
+
+
+def test_create_VersionInfo_with_date() -> None:
+    from PyInstaller.utils.win32.versioninfo import VSVersionInfo
+
+    from versioninfo_helper import create_VersionInfo
+
+    vi: VSVersionInfo = create_VersionInfo(date=(30785590, 1761935360))
     assert isinstance(vi, VSVersionInfo)
     expected = """# UTF-8
 #
@@ -237,22 +321,33 @@ VSVersionInfo(
 )"""
     assert str(vi) == expected
 
-    vi = versioninfo_helper.create_VersionInfo(
+
+# ------------------------------------------------------------------------------
+
+
+def test_create_VersionInfo_with_full_details() -> None:
+    from PyInstaller.utils.win32.versioninfo import VSVersionInfo
+
+    from versioninfo_helper import CharsetCode
+    from versioninfo_helper import FileFlags
+    from versioninfo_helper import FileOS
+    from versioninfo_helper import FileType
+    from versioninfo_helper import LanguageID
+    from versioninfo_helper import create_VersionInfo
+
+    vi: VSVersionInfo = create_VersionInfo(
         (1, 2, 3, 4),
         (5, 6, 7, 8),
-        mask=versioninfo_helper.FileFlags.VS_FFI_FILEFLAGSMASK,
-        flags=versioninfo_helper.FileFlags.VS_FF_DEBUG
-        | versioninfo_helper.FileFlags.VS_FF_PRIVATEBUILD,
-        OS=versioninfo_helper.FileOS.VOS_NT_WINDOWS32,
-        fileType=versioninfo_helper.FileType.VFT_APP,
+        mask=FileFlags.VS_FFI_FILEFLAGSMASK,
+        flags=FileFlags.VS_FF_DEBUG | FileFlags.VS_FF_PRIVATEBUILD,
+        OS=FileOS.VOS_NT_WINDOWS32,
+        fileType=FileType.VFT_APP,
         subtype=0,
-        date=datetime.datetime(
-            2020, 1, 1, 0, 0, 0, tzinfo=datetime.timezone.utc
-        ),
+        date=dt.datetime(2020, 1, 1, 0, 0, 0, tzinfo=dt.timezone.utc),
         strings=[
             {
-                "lang_id": versioninfo_helper.LanguageID.US_English,
-                "charset_id": versioninfo_helper.CharsetCode.Unicode,
+                "lang_id": LanguageID.US_English,
+                "charset_id": CharsetCode.Unicode,
                 "fields": {
                     "CompanyName": "Your Company Name LLC",
                     "FileDescription": "AppName (ver1.2.3.4)",
@@ -312,8 +407,29 @@ VSVersionInfo(
 )"""
     assert str(vi) == expected
 
-    with pytest.raises(ValueError):
-        versioninfo_helper.create_VersionInfo(filevers=(99999999999, 0, 0, 0))
 
-    with pytest.raises(ValueError):
-        versioninfo_helper.create_VersionInfo(prodvers=(99999999999, 0, 0, 0))
+# ------------------------------------------------------------------------------
+
+
+def test_create_VersionInfo_invalid_filevers() -> None:
+    from pytest import raises
+
+    from versioninfo_helper import create_VersionInfo
+
+    with raises(ValueError):
+        create_VersionInfo(filevers=(99999999999, 0, 0, 0))
+
+
+# ------------------------------------------------------------------------------
+
+
+def test_create_VersionInfo_invalid_prodvers() -> None:
+    from pytest import raises
+
+    from versioninfo_helper import create_VersionInfo
+
+    with raises(ValueError):
+        create_VersionInfo(prodvers=(99999999999, 0, 0, 0))
+
+
+# ------------------------------------------------------------------------------

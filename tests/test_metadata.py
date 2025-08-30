@@ -6,6 +6,9 @@ from typing import Any
 import PyInstaller.__main__
 
 
+# ------------------------------------------------------------------------------
+
+
 def compile_extract_compare(
     tmp_path: Path,
     spec_file: Path,
@@ -78,6 +81,9 @@ def compile_extract_compare(
     compare_keys(expected_data, json_data)
 
 
+# ------------------------------------------------------------------------------
+
+
 def test_no_metadata(tmp_path: Path) -> None:
     spec_file: Path = Path(__file__).parent / "no_metadata.spec"
     appname: str = "helloworld"
@@ -131,6 +137,9 @@ def test_no_metadata(tmp_path: Path) -> None:
     compile_extract_compare(tmp_path, spec_file, appname, expected_data)
 
 
+# ------------------------------------------------------------------------------
+
+
 def test_full_metadata(tmp_path: Path) -> None:
     spec_file: Path = Path(__file__).parent / "full_metadata.spec"
     appname: str = "helloworld"
@@ -182,3 +191,6 @@ def test_full_metadata(tmp_path: Path) -> None:
     }
 
     compile_extract_compare(tmp_path, spec_file, appname, expected_data)
+
+
+# ------------------------------------------------------------------------------
