@@ -1,0 +1,4 @@
+Use this powershell command to extract VersionInfo from a PE file:
+
+
+powershell -Command "(Get-ChildItem .\*.exe).VersionInfo | ConvertTo-Json -Compress  | Out-File -FilePath versioninfo.json -Encoding utf8"

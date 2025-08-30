@@ -14,6 +14,7 @@ from datetime import datetime
 from datetime import timezone
 from enum import IntEnum
 from enum import IntFlag
+from typing import Final
 
 from PyInstaller.utils.win32.versioninfo import FixedFileInfo
 from PyInstaller.utils.win32.versioninfo import StringFileInfo
@@ -23,24 +24,6 @@ from PyInstaller.utils.win32.versioninfo import VarFileInfo
 from PyInstaller.utils.win32.versioninfo import VarStruct
 from PyInstaller.utils.win32.versioninfo import VSVersionInfo
 
-
-# Python 3.7 or higher
-if sys.version_info < (3, 7):
-    raise ImportError(
-        "This module is strictly typed and can't be used in Python <3.7!"
-    )
-
-# Python 3.8 or higher
-if sys.version_info >= (3, 8):
-    from typing import Final
-else:
-    from typing_extensions import Final
-
-# Python 3.9 or higher
-if sys.version_info >= (3, 9):
-    pass
-else:
-    pass
 
 # Python 3.10 or higher
 if sys.version_info >= (3, 10):
@@ -56,11 +39,32 @@ else:
     from typing_extensions import NotRequired
     from typing_extensions import Required
 
+# Python 3.13 or higher
+if sys.version_info >= (3, 13):
+    from warnings import deprecated
+else:
+    from ._backport import deprecated
+
+
 # Python 3.15 or higher
 if sys.version_info >= (3, 15):
     from typing import TypedDict
 else:
     from typing_extensions import TypedDict
+
+
+__all__: list[str] = [
+    "create_VersionInfo",
+    "VersionTuple",
+    "FileFlags",
+    "FileOS",
+    "FileType",
+    "FileSubtype",
+    "VersionInfoStringsDict",
+    "StringFileInfoDict",
+    "CharsetCode",
+    "LanguageID",
+]
 
 
 # ==============================================================================
@@ -952,7 +956,7 @@ class CharsetCode(IntEnum):
 
 
 # waiting for all type checkers to support PEP 728
-class StringFileInfo_Dict(  # type: ignore[call-arg]
+class StringFileInfoDict(  # type: ignore[call-arg]
     TypedDict,
     total=False,
     extra_items=str,  # pyright: ignore[reportGeneralTypeIssues]  # PEP 728
@@ -976,23 +980,59 @@ class StringFileInfo_Dict(  # type: ignore[call-arg]
     SpecialBuild: NotRequired[str]
 
 
+@deprecated("Use StringFileInfoDict instead of StringFileInfo_Dict")
+class StringFileInfo_Dict(TypedDict, total=False):
+    """
+    Deprecated alias for StringFileInfoDict.
+    Use StringFileInfoDict instead.
+    """
+
+    Comments: NotRequired[str]
+    CompanyName: NotRequired[str]
+    FileDescription: NotRequired[str]
+    FileVersion: NotRequired[str]
+    InternalName: NotRequired[str]
+    LegalCopyright: NotRequired[str]
+    LegalTrademarks: NotRequired[str]
+    OriginalFilename: NotRequired[str]
+    PrivateBuild: NotRequired[str]
+    ProductName: NotRequired[str]
+    ProductVersion: NotRequired[str]
+    SpecialBuild: NotRequired[str]
+
+
 # ------------------------------------------------------------------------------
 
 
-class VersionInfo_Strings_Dict(TypedDict):
+class VersionInfoStringsDict(TypedDict):
     """
     TypedDict with all required keys for VersionInfo strings block.
     """
 
     lang_id: Required[LanguageID | int]
-    charset_id: Required[LanguageID | int]
-    fields: Required[StringFileInfo_Dict]
+    charset_id: Required[CharsetCode | int]
+    fields: Required[StringFileInfoDict]
+
+
+@deprecated("Use VersionInfoStringsDict instead of VersionInfo_Strings_Dict")
+class VersionInfo_Strings_Dict(TypedDict):
+    """
+    Deprecated alias for VersionInfoStringsDict.
+    Use VersionInfoStringsDict instead.
+    """
+
+    lang_id: Required[LanguageID | int]
+    charset_id: Required[CharsetCode | int]
+    fields: Required[StringFileInfoDict]
 
 
 # ------------------------------------------------------------------------------
 
 
 VersionTuple: TypeAlias = "tuple[int, int, int, int]"
+"""
+Tuple of four 16-bit unsigned integers used for file and product version.
+"""
 
 
 # ==============================================================================
@@ -1103,7 +1143,7 @@ def create_VersionInfo(
     fileType: FileType | int | None = None,
     subtype: FileSubtype | int | None = None,
     date: datetime | tuple[int, int] | None = None,
-    strings: Sequence[VersionInfo_Strings_Dict] | None = None,
+    strings: Sequence[VersionInfoStringsDict] | None = None,
 ) -> VSVersionInfo:
     """
     Create a VSVersionInfo instance with data provided in arguments.
@@ -1114,7 +1154,7 @@ def create_VersionInfo(
 
     - `filevers`
 
-        A tuple of four 16-bit integers.
+        A tuple of four 16-bit unsigned integers.
         For SemVer, use (MAJOR, MINOR, PATCH, 0).
         Default: `(0, 0, 0, 0)`
 
@@ -1194,7 +1234,7 @@ def create_VersionInfo(
         + `charset_id`: CharsetCode | int
 
         + `fields`: {str: str} dict mapping StringStruct names to values, see
-            `StringFileInfo_Dict`
+            `StringFileInfoDict`
 
     """
     if filevers is None:
@@ -1205,12 +1245,18 @@ def create_VersionInfo(
             0,  # 16 bit uint, Optional, leave as 0 if unused
         )
     dwFileVersion_tuple: VersionTuple = filevers
-    assert all(0 <= i < 2**16 for i in dwFileVersion_tuple)
+    if not all(0 <= i < 2**16 for i in dwFileVersion_tuple):
+        raise ValueError(
+            "filevers must be a tuple of four 16-bit unsigned integers"
+        )
 
     if prodvers is None:
         prodvers = filevers
     dwProductVersion_tuple: VersionTuple = prodvers
-    assert all(0 <= i < 2**16 for i in dwProductVersion_tuple)
+    if not all(0 <= i < 2**16 for i in dwProductVersion_tuple):
+        raise ValueError(
+            "prodvers must be a tuple of four 16-bit unsigned integers"
+        )
 
     if mask is None:
         mask = FileFlags.VS_FFI_FILEFLAGSMASK
@@ -1257,7 +1303,7 @@ def create_VersionInfo(
         for info in strings:
             lang_id: int = int(info["lang_id"])
             charset_id: int = int(info["charset_id"])
-            fields: StringFileInfo_Dict = info["fields"]
+            fields: StringFileInfoDict = info["fields"]
             string_infos.append(
                 create_StringFileInfo_table(
                     lang_id=lang_id,
