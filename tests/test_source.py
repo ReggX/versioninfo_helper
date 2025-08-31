@@ -433,3 +433,33 @@ def test_create_VersionInfo_invalid_prodvers() -> None:
 
 
 # ------------------------------------------------------------------------------
+
+
+def test_deprecated_StringFileInfo_Dict() -> None:
+    from versioninfo_helper import StringFileInfo_Dict
+    from versioninfo_helper import StringFileInfoDict
+
+    assert hasattr(StringFileInfo_Dict, "__deprecated__")
+
+    assert (
+        StringFileInfo_Dict.__annotations__
+        == StringFileInfoDict.__annotations__
+    )
+
+
+# ------------------------------------------------------------------------------
+
+
+def test_deprecated_VersionInfo_Strings_Dict() -> None:
+    from versioninfo_helper import VersionInfo_Strings_Dict
+    from versioninfo_helper import VersionInfoStringsDict
+
+    assert hasattr(VersionInfo_Strings_Dict, "__deprecated__")
+
+    assert (
+        VersionInfo_Strings_Dict.__annotations__
+        == VersionInfoStringsDict.__annotations__
+    )
+
+
+# ------------------------------------------------------------------------------
