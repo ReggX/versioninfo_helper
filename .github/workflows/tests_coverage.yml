@@ -9,7 +9,8 @@ on:
       - main
 
 jobs:
-  coverage:
+  run-tests:
+    name: Run Tests with Coverage
     runs-on: windows-latest
     steps:
       - name: Checkout repository
@@ -31,9 +32,24 @@ jobs:
         with:
           name: coverage-data
           include-hidden-files: true
-          path: .cov/
+          path: coverage_report/
+
+  upload-coverage:
+    name: Upload coverage to Coveralls
+    needs: [run-tests]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Download coverage artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage-data
+          path: coverage_report/
 
       - name: Coveralls Upload
         uses: coverallsapp/github-action@v2
         with:
-          file: .cov/.coverage
+          fail-on-error: false
+          file: coverage_report/cov.xml

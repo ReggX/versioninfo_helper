@@ -252,8 +252,8 @@ def clean_old_coverage(session: nox.Session) -> None:
     import os
     import shutil
 
-    if os.path.exists(".cov"):
-        shutil.rmtree(".cov", ignore_errors=False)
+    if os.path.exists("coverage_report"):
+        shutil.rmtree("coverage_report", ignore_errors=False)
 
 
 @nox.session(
