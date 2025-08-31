@@ -89,7 +89,10 @@ strings: list[VersionInfoStringsDict] = [
 ]
 
 vsinfo: VSVersionInfo = create_VersionInfo(
-    file_ver_tuple, product_ver_tuple, flags=build_flags, strings=strings,
+    file_ver_tuple,
+    product_ver_tuple,
+    flags=build_flags,
+    strings=strings,
 )
 
 
@@ -106,10 +109,11 @@ a = Analysis(
     hooksconfig={},
     runtime_hooks=[],
     excludes=[],
+    win_no_prefer_redirects=False,
+    win_private_assemblies=False,
     noarchive=False,
-    optimize=0,
 )
-pyz = PYZ(a.pure)
+pyz = PYZ(a.pure, a.zipped_data)
 
 exe = EXE(
     pyz,
@@ -132,6 +136,7 @@ exe = EXE(
 coll = COLLECT(
     exe,
     a.binaries,
+    a.zipfiles,
     a.datas,
     strip=False,
     upx=True,
