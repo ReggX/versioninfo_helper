@@ -34,7 +34,9 @@ classifiers = [
     "Typing :: Typed",
 ]
 dependencies = [
-    "pyinstaller>=5",
+    "pyinstaller>=5; python_version < '3.12'",
+    "pyinstaller>=5.5; python_version >= '3.11'",
+    "pyinstaller>=5.13; python_version >= '3.12'",
     "typing-extensions>=4.13.2; python_version < '3.15'",
 ]
 
