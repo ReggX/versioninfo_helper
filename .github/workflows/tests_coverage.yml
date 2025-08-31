@@ -1,4 +1,4 @@
-name: tests with coverage
+name: 🧪 Tests with Coverage
 
 on:
   push:
@@ -12,18 +12,22 @@ jobs:
   coverage:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-python@v5
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
           python-version-file: "pyproject.toml"
 
       - name: Install uv
         uses: astral-sh/setup-uv@v6
 
-      - name: Run tests with coverage
+      - name: Run tests & coverage
         run: uv tool run nox -s test_source
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload coverage data
+        uses: actions/upload-artifact@v4
         with:
           name: coverage-data
           include-hidden-files: true
