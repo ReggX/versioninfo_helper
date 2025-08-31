@@ -1,4 +1,4 @@
-name: 🧪 Tests with Coverage
+name: 🧪 Unittests with Coverage
 
 on:
   push:
@@ -26,9 +26,14 @@ jobs:
       - name: Run tests & coverage
         run: uv tool run nox -s test_source
 
-      - name: Upload coverage data
+      - name: Store coverage artifact
         uses: actions/upload-artifact@v4
         with:
           name: coverage-data
           include-hidden-files: true
           path: .cov/
+
+      - name: Coveralls Upload
+        uses: coverallsapp/github-action@v2
+        with:
+          file: .cov/.coverage

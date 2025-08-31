@@ -1,0 +1,46 @@
+name: 🧹 Linters
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  generate-jobs:
+    runs-on: ubuntu-latest
+    outputs:
+      session: ${{ steps.set-matrix.outputs.session }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Extract Job Matrix
+        id: set-matrix
+        shell: bash
+        run: echo session=$(uv tool run nox --json -l -t lint | jq '[.[] | select(.tags | index("entrypoint")) | .session]') | tee --append $GITHUB_OUTPUT
+
+  nox-sessions:
+    name: Session ${{ matrix.session }}
+    needs: [generate-jobs]
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        session: ${{ fromJson(needs.generate-jobs.outputs.session) }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Run nox session
+        run: uv tool run nox -s "${{ matrix.session }}"

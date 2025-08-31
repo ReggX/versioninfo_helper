@@ -1,4 +1,4 @@
-name: 🚦 Run Nox Session Matrix
+name: 🚦 Noxfile Self Check
 
 on:
   push:
@@ -24,7 +24,7 @@ jobs:
       - name: Extract Job Matrix
         id: set-matrix
         shell: bash
-        run: echo session=$(uv tool run nox --json -l | jq '[.[] | select(.tags | index("entrypoint")) | .session]') | tee --append $GITHUB_OUTPUT
+        run: echo session=$(uv tool run nox --json -l -t self_check | jq '[.[] | select(.tags | index("entrypoint")) | .session]') | tee --append $GITHUB_OUTPUT
 
   nox-sessions:
     name: Session ${{ matrix.session }}
