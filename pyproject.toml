@@ -54,6 +54,8 @@ types = ["types-pyinstaller>=6.15.0.20250822"]
 
 [project.urls]
 "Homepage" = "https://github.com/ReggX/versioninfo_helper"
+"Documentation" = "https://reggx.github.io/versioninfo_helper/"
+"PyPI" = "https://pypi.org/project/versioninfo-helper/"
 "Bug Reports" = "https://github.com/ReggX/versioninfo_helper/issues"
 "Source" = "https://github.com/ReggX/versioninfo_helper"
 
@@ -64,19 +66,16 @@ package-data = { "versioninfo_helper" = ["py.typed"] }
 
 [tool.mypy]
 files = ["src/**/*.py"]
-exclude = ["src/versioninfo_helper/_backport.py"]
 strict = true
 show_error_codes = true
 ignore_missing_imports = true
 
 [tool.pyright]
 include = ["src"]
-exclude = ["src/versioninfo_helper/_backport.py"]
 strict = ["src"]
 
 [tool.pyrefly]
 project-includes = ["src"]
-project-excludes = ["src/versioninfo_helper/_backport.py"]
 
 [tool.isort]
 multi_line_output = 5
@@ -109,13 +108,13 @@ filterwarnings = [
 [tool.coverage.run]
 branch = true
 source = ["versioninfo_helper"]
-data_file = ".cov/.coverage"
+data_file = "coverage_report/.coverage"
 
 [tool.coverage.report]
 show_missing = true
 
 [tool.coverage.xml]
-output = ".cov/cov.xml"
+output = "coverage_report/cov.xml"
 
 [tool.coverage.html]
-directory = ".cov/htmlcov"
+directory = "coverage_report/htmlcov"

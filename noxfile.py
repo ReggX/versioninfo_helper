@@ -114,13 +114,21 @@ def _self_check_new_typing_extensions(session: nox.Session) -> None:
 # LINTERS ----------------------------------------------------------------------
 
 
-@nox.session(reuse_venv=REUSE_VENV, venv_backend=VENV_BACKEND, tags=["lint", "entrypoint"])
+@nox.session(
+    reuse_venv=REUSE_VENV,
+    venv_backend=VENV_BACKEND,
+    tags=["lint", "entrypoint"],
+)
 def flake8(session: nox.Session) -> None:
     session.install("-U", "flake8")
     session.run("python", "-m", "flake8", "./src")
 
 
-@nox.session(reuse_venv=REUSE_VENV, venv_backend=VENV_BACKEND, tags=["lint", "entrypoint"])
+@nox.session(
+    reuse_venv=REUSE_VENV,
+    venv_backend=VENV_BACKEND,
+    tags=["lint", "entrypoint"],
+)
 def ruff_check(session: nox.Session) -> None:
     session.install("-U", "ruff")
     session.run("ruff", "check", "./src")
@@ -140,7 +148,11 @@ def black_check(session: nox.Session) -> None:
     session.run("black", "--check", "./src")
 
 
-@nox.session(reuse_venv=REUSE_VENV, venv_backend=VENV_BACKEND, tags=["lint", "entrypoint"])
+@nox.session(
+    reuse_venv=REUSE_VENV,
+    venv_backend=VENV_BACKEND,
+    tags=["lint", "entrypoint"],
+)
 def ruff_format_check(session: nox.Session) -> None:
     session.install("-U", "ruff")
     session.run("ruff", "format", "--check", "./src")
@@ -177,8 +189,8 @@ def ruff_format(session: nox.Session) -> None:
 @nox.session(
     reuse_venv=REUSE_VENV,
     venv_backend=VENV_BACKEND,
-    python=PYTHON_OLDEST_NEWEST,
-    tags=["typecheck", "entrypoint"],
+    python=PYTHON_VERSION_MATRIX,
+    tags=["typecheck", "mypy", "entrypoint"],
 )
 def mypy(session: nox.Session) -> None:
     pyproject = nox.project.load_toml("pyproject.toml")
@@ -195,8 +207,8 @@ def mypy(session: nox.Session) -> None:
 @nox.session(
     reuse_venv=REUSE_VENV,
     venv_backend=VENV_BACKEND,
-    python=PYTHON_OLDEST_NEWEST,
-    tags=["typecheck", "entrypoint"],
+    python=PYTHON_VERSION_MATRIX,
+    tags=["typecheck", "pyright", "entrypoint"],
 )
 def pyright(session: nox.Session) -> None:
     pyproject = nox.project.load_toml("pyproject.toml")
@@ -213,8 +225,8 @@ def pyright(session: nox.Session) -> None:
 @nox.session(
     reuse_venv=REUSE_VENV,
     venv_backend=VENV_BACKEND,
-    python=PYTHON_OLDEST_NEWEST,
-    tags=["typecheck", "entrypoint"],
+    python=PYTHON_VERSION_MATRIX,
+    tags=["typecheck", "pyrefly", "entrypoint"],
 )
 def pyrefly(session: nox.Session) -> None:
     pyproject = nox.project.load_toml("pyproject.toml")
@@ -240,15 +252,15 @@ def clean_old_coverage(session: nox.Session) -> None:
     import os
     import shutil
 
-    if os.path.exists(".cov"):
-        shutil.rmtree(".cov", ignore_errors=False)
+    if os.path.exists("coverage_report"):
+        shutil.rmtree("coverage_report", ignore_errors=False)
 
 
 @nox.session(
     reuse_venv=REUSE_VENV,
     venv_backend=VENV_BACKEND,
     python=PYTHON_VERSION_MATRIX,
-    tags=["test", "coverage"],
+    tags=["unittests", "coverage"],
     requires=["clean_old_coverage"],
 )
 @nox.parametrize("pyinstaller_version", PYINSTALLER_VERSION_MATRIX)
@@ -292,10 +304,10 @@ def test_source(
     reuse_venv=REUSE_VENV,
     venv_backend=VENV_BACKEND,
     python=PYTHON_VERSION_MATRIX,
-    tags=["test", "entrypoint"],
+    tags=["integration-tests", "entrypoint"],
 )
 @nox.parametrize("pyinstaller_version", PYINSTALLER_VERSION_MATRIX)
-def test_metadata(
+def integration_test(
     session: nox.Session,
     pyinstaller_version: str,
 ) -> None:
@@ -310,7 +322,7 @@ def test_metadata(
         "pytest",
         f"PyInstaller{pyinstaller_version}",
     )
-    session.run("pytest", "tests/test_metadata.py")
+    session.run("pytest", "tests/test_integration.py")
 
 
 # BUILD DOCS -------------------------------------------------------------------

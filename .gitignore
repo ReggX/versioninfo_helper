@@ -15,9 +15,7 @@ parts/
 sdist/
 var/
 .nox/
-htmlcov/
-.coverage
-cov.xml
+/coverage_report/
 *.egg-info/
 .installed.cfg
 *.egg
