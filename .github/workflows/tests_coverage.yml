@@ -1,0 +1,30 @@
+name: tests with coverage
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  coverage:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version-file: "pyproject.toml"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Run tests with coverage
+        run: uv tool run nox -s test_source
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: coverage-data
+          include-hidden-files: true
+          path: .cov/

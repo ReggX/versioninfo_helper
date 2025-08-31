@@ -109,12 +109,13 @@ filterwarnings = [
 [tool.coverage.run]
 branch = true
 source = ["versioninfo_helper"]
+data_file = ".cov/.coverage"
 
 [tool.coverage.report]
 show_missing = true
 
 [tool.coverage.xml]
-output = "cov.xml"
+output = ".cov/cov.xml"
 
 [tool.coverage.html]
-directory = "htmlcov"
+directory = ".cov/htmlcov"
