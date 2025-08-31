@@ -43,7 +43,7 @@ else:
 if sys.version_info >= (3, 13):
     from warnings import deprecated
 else:
-    from ._backport import deprecated
+    from typing_extensions import deprecated
 
 
 # Python 3.15 or higher
