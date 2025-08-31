@@ -54,6 +54,8 @@ types = ["types-pyinstaller>=6.15.0.20250822"]
 
 [project.urls]
 "Homepage" = "https://github.com/ReggX/versioninfo_helper"
+"Documentation" = "https://reggx.github.io/versioninfo_helper/"
+"PyPI" = "https://pypi.org/project/versioninfo-helper/"
 "Bug Reports" = "https://github.com/ReggX/versioninfo_helper/issues"
 "Source" = "https://github.com/ReggX/versioninfo_helper"
 
