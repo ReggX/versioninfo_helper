@@ -3,13 +3,14 @@ name: 🔄 Integration Testing
 on:
   push:
     branches:
-      - main
+      - "*"
   pull_request:
     branches:
       - main
 
 jobs:
   generate-jobs:
+    name: Generate Job Matrix
     runs-on: ubuntu-latest
     outputs:
       session: ${{ steps.set-matrix.outputs.session }}

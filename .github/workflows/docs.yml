@@ -16,6 +16,7 @@ permissions:
 jobs:
   # Build the documentation and upload the static HTML files as an artifact.
   build:
+    name: Build Docs
     runs-on: windows-latest
     steps:
       - name: Checkout repository
@@ -40,6 +41,7 @@ jobs:
   # Deploy the artifact to GitHub pages.
   # This is a separate job so that only actions/deploy-pages has the necessary permissions.
   deploy:
+    name: Publish Docs
     needs: build
     runs-on: ubuntu-latest
     permissions:
