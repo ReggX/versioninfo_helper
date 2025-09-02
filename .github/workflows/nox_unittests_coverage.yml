@@ -1,0 +1,122 @@
+name: 🧪 Unittests with Coverage
+
+on:
+  push:
+    branches:
+      - "*"
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  generate-jobs:
+    name: Generate Job Matrix
+    runs-on: ubuntu-latest
+    outputs:
+      session: ${{ steps.set-matrix.outputs.session }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Extract Job Matrix
+        id: set-matrix
+        shell: bash
+        run: "echo session=$(uv tool run nox --json -l -t unittests | jq '[ to_entries[] | select(.value.tags | index(\"unittests\")) | {index: .key, session: .value.session} ]') | tee --append $GITHUB_OUTPUT"
+
+  nox-sessions:
+    name: Session [${{ matrix.data.index }}] ${{ matrix.data.session }}
+    needs: [generate-jobs]
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        data: ${{ fromJson(needs.generate-jobs.outputs.session) }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Run nox session
+        run: uv tool run nox -s "${{ matrix.data.session }}"
+
+      - name: Add .index to coverage file
+        run: |
+          mv coverage_report/.coverage coverage_report/.coverage.${{ matrix.data.index }}
+
+      - name: Store coverage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: cov-artifact-${{ matrix.data.index }}
+          include-hidden-files: true
+          path: coverage_report/.coverage.${{ matrix.data.index }}
+
+  combine-coverage:
+    name: Combine coverage
+    needs: [nox-sessions]
+    if: success() || failure()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Download all coverage artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts  # This will contain one folder per artifact
+
+      - name: Show downloaded artifacts
+        run: |
+          echo "Artifacts structure:"
+          find artifacts
+
+      - name: Combine coverage files
+        run: |
+          # Copy all .coverage files to coverage_report directory
+          mkdir -p coverage_report
+          find artifacts -name '.coverage.*' -exec cp {} ./coverage_report/ \;
+          find coverage_report
+
+      - name: Generate combined coverage report
+        run: |
+          # Combine coverage data
+          uv tool run coverage combine --debug=pathmap --data-file=coverage_report/.coverage
+          uv tool run coverage report
+          uv tool run coverage xml
+          uv tool run coverage html
+
+      - name: Store combined coverage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: combined-coverage-data
+          include-hidden-files: true
+          path: coverage_report/
+
+  upload-coverage:
+    name: Upload coverage to Coveralls
+    needs: [combine-coverage]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Download coverage artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: combined-coverage-data
+          path: coverage_report/
+
+      - name: Coveralls Upload
+        uses: coverallsapp/github-action@v2
+        with:
+          fail-on-error: false
+          file: coverage_report/cov.xml

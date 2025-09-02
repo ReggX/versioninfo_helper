@@ -6,7 +6,7 @@ This repository contains helper scripts to dynamically create VersionInfo object
 [![Documentation on Github Pages](https://img.shields.io/website?url=https%3A%2F%2Freggx.github.io%2Fversioninfo_helper%2F&label=Documentation%20on%20Github%20Pages)](https://reggx.github.io/versioninfo_helper/)
  \
 [![🔄 Integration Testing](https://github.com/ReggX/versioninfo_helper/actions/workflows/nox_integration_tests.yml/badge.svg)](https://github.com/ReggX/versioninfo_helper/actions/workflows/nox_integration_tests.yml)
-[![🧪 Unittests with Coverage](https://github.com/ReggX/versioninfo_helper/actions/workflows/tests_coverage.yml/badge.svg)](https://github.com/ReggX/versioninfo_helper/actions/workflows/tests_coverage.yml)
+[![🧪 Unittests with Coverage](https://github.com/ReggX/versioninfo_helper/actions/workflows/nox_unittests_coverage.yml/badge.svg)](https://github.com/ReggX/versioninfo_helper/actions/workflows/nox_unittests_coverage.yml)
 [![Coverage Status](https://coveralls.io/repos/github/ReggX/versioninfo_helper/badge.svg?branch=main)](https://coveralls.io/github/ReggX/versioninfo_helper?branch=main)
  \
 [![🔍 Typecheck: Mypy](https://github.com/ReggX/versioninfo_helper/actions/workflows/nox_typecheck_mypy.yml/badge.svg)](https://github.com/ReggX/versioninfo_helper/actions/workflows/nox_typecheck_mypy.yml)

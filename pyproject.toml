@@ -105,9 +105,17 @@ filterwarnings = [
     "ignore:.*pkg_resources is deprecated as an API:UserWarning",
 ]
 
+[tool.coverage.paths]
+source = [
+    "src",
+    "D:\\a\\*\\*\\src",
+    "/home/runner/work/*/*/src",
+    ]
+
 [tool.coverage.run]
 branch = true
-source = ["versioninfo_helper"]
+source = ["src"]
+relative_files = true
 data_file = "coverage_report/.coverage"
 
 [tool.coverage.report]
