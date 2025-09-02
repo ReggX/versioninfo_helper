@@ -35,4 +35,4 @@ Wheels are available on [PyPI](https://pypi.org/project/versioninfo-helper/), in
 
 ## Usage
 
-See [example_simple.onefile.spec](example_simple.onefile.spec) and [example_dynamic.onefile.spec](example_dynamic.onefile.spec) for examples on how to integrate VersionInfo creation directly into PyInstaller .spec files.
+See [example_simple.onefile.spec](https://github.com/ReggX/versioninfo_helper/blob/main/example_simple.onefile.spec) and [example_dynamic.onefile.spec](https://github.com/ReggX/versioninfo_helper/blob/main/example_dynamic.onefile.spec) for examples on how to integrate VersionInfo creation directly into PyInstaller .spec files.
