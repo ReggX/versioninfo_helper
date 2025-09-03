@@ -58,6 +58,9 @@ nox.options.default_venv_backend = VENV_BACKEND
     ],
 )
 def self_check(session: nox.Session) -> None:
+    """
+    Run all self-checks to ensure the noxfile is up to date.
+    """
     session.notify("_self_check_Python_versions")
     session.notify("_self_check_new_PyInstaller")
     session.notify("_self_check_new_typing_extensions")
@@ -76,6 +79,17 @@ def _self_check_Python_versions(session: nox.Session) -> None:
     if set(PYTHON_VERSION_MATRIX) != set(PYINSTALLER_MIN_VERSION.keys()):
         session.error(
             "PYTHON_VERSION_MATRIX and PYINSTALLER_MIN_VERSION keys must match"
+        )
+    pyproject = nox.project.load_toml("pyproject.toml")
+    classifieers: list[str] = pyproject.get("project", {}).get("classifiers", [])
+    toml_versions: list[str] = [
+        line.removeprefix("Programming Language :: Python :: ")
+        for line in classifieers
+        if line.startswith("Programming Language :: Python :: 3.")
+    ]
+    if set(PYTHON_VERSION_MATRIX) != set(toml_versions):
+        session.error(
+            "PYTHON_VERSION_MATRIX and pyproject.toml classifiers must match"
         )
 
 
@@ -120,6 +134,9 @@ def _self_check_new_typing_extensions(session: nox.Session) -> None:
     tags=["lint", "entrypoint"],
 )
 def flake8(session: nox.Session) -> None:
+    """
+    Lint with flake8.
+    """
     session.install("-U", "flake8")
     session.run("python", "-m", "flake8", "./src")
 
@@ -130,6 +147,9 @@ def flake8(session: nox.Session) -> None:
     tags=["lint", "entrypoint"],
 )
 def ruff_check(session: nox.Session) -> None:
+    """
+    Lint with ruff.
+    """
     session.install("-U", "ruff")
     session.run("ruff", "check", "./src")
 
@@ -144,6 +164,9 @@ def ruff_check(session: nox.Session) -> None:
     tags=["lint"],
 )
 def black_check(session: nox.Session) -> None:
+    """
+    Check formatting with black.
+    """
     session.install("-U", "black")
     session.run("black", "--check", "./src")
 
@@ -154,6 +177,9 @@ def black_check(session: nox.Session) -> None:
     tags=["lint", "entrypoint"],
 )
 def ruff_format_check(session: nox.Session) -> None:
+    """
+    Check formatting with ruff.
+    """
     session.install("-U", "ruff")
     session.run("ruff", "format", "--check", "./src")
 
@@ -168,6 +194,9 @@ def ruff_format_check(session: nox.Session) -> None:
     tags=["format"],
 )
 def black(session: nox.Session) -> None:
+    """
+    Format code with black.
+    """
     session.install("-U", "black")
     session.run("black", "./src")
 
@@ -179,6 +208,9 @@ def black(session: nox.Session) -> None:
     tags=["format"],
 )
 def ruff_format(session: nox.Session) -> None:
+    """
+    Format code with ruff.
+    """
     session.install("-U", "ruff")
     session.run("ruff", "format", "./src")
 
@@ -193,6 +225,9 @@ def ruff_format(session: nox.Session) -> None:
     tags=["typecheck", "mypy", "entrypoint"],
 )
 def mypy(session: nox.Session) -> None:
+    """
+    Typecheck with mypy.
+    """
     pyproject = nox.project.load_toml("pyproject.toml")
     session.install(
         "-U",
@@ -211,6 +246,9 @@ def mypy(session: nox.Session) -> None:
     tags=["typecheck", "pyright", "entrypoint"],
 )
 def pyright(session: nox.Session) -> None:
+    """
+    Typecheck with pyright.
+    """
     pyproject = nox.project.load_toml("pyproject.toml")
     session.install(
         "-U",
@@ -229,6 +267,9 @@ def pyright(session: nox.Session) -> None:
     tags=["typecheck", "pyrefly", "entrypoint"],
 )
 def pyrefly(session: nox.Session) -> None:
+    """
+    Typecheck with pyrefly.
+    """
     pyproject = nox.project.load_toml("pyproject.toml")
     session.install(
         "-U",
@@ -249,6 +290,9 @@ def pyrefly(session: nox.Session) -> None:
     tags=["coverage"],
 )
 def clean_old_coverage(session: nox.Session) -> None:
+    """
+    Remove old coverage data to avoid mixing reports from different runs.
+    """
     import os
     import shutil
 
@@ -265,11 +309,14 @@ def clean_old_coverage(session: nox.Session) -> None:
 )
 @nox.parametrize("pyinstaller_version", PYINSTALLER_VERSION_MATRIX)
 @nox.parametrize("typing_extensions_version", TYPING_EXTENSIONS_VERSION_MATRIX)
-def test_source(
+def unittests_with_coverage(
     session: nox.Session,
     pyinstaller_version: str,
     typing_extensions_version: str,
 ) -> None:
+    """
+    Run the unit tests with coverage using pytest-cov.
+    """
     if pyinstaller_version == "{%MIN_VERSION%}":
         assert isinstance(session.python, str)
         pyinstaller_version = PYINSTALLER_MIN_VERSION[session.python]
@@ -311,6 +358,10 @@ def integration_test(
     session: nox.Session,
     pyinstaller_version: str,
 ) -> None:
+    """
+    Run the integration tests.
+    Compiles an executable and checks the versioninfo resource.
+    """
     if pyinstaller_version == "{%MIN_VERSION%}":
         assert isinstance(session.python, str)
         pyinstaller_version = PYINSTALLER_MIN_VERSION[session.python]
@@ -334,6 +385,9 @@ def integration_test(
     tags=["docs"],
 )
 def docs(session: nox.Session) -> None:
+    """
+    Build the documentation with pdoc.
+    """
     session.install("-U", "-e", ".", "pdoc")
     session.run(
         "python",
