@@ -1,4 +1,6 @@
 name: "🧠 Typecheck: Pyright"
+permissions:
+  contents: read
 
 on:
   push:

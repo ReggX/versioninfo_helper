@@ -1,4 +1,6 @@
 name: 🚦 Noxfile Self Check
+permissions:
+  contents: read
 
 on:
   push:

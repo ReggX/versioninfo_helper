@@ -1,4 +1,6 @@
 name: "🔍 Typecheck: Mypy"
+permissions:
+  contents: read
 
 on:
   push:
