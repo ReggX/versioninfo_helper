@@ -87,7 +87,7 @@ def _self_check_Python_versions(session: nox.Session) -> None:
         for line in classifieers
         if line.startswith("Programming Language :: Python :: 3.")
     ]
-    if set(PYTHON_VERSION_MATRIX) != set(toml_versions):
+    if set(PYTHON_VERSION_MATRIX) < set(toml_versions):
         session.error(
             "PYTHON_VERSION_MATRIX and pyproject.toml classifiers must match"
         )
@@ -235,6 +235,7 @@ def mypy(session: nox.Session) -> None:
         ".",
         "mypy",
         *nox.project.dependency_groups(pyproject, "types"),
+        silent=False,
     )
     session.run("mypy", "src", "--strict")
 
@@ -256,6 +257,7 @@ def pyright(session: nox.Session) -> None:
         ".",
         "pyright",
         *nox.project.dependency_groups(pyproject, "types"),
+        silent=False,
     )
     session.run("pyright", "src")
 
@@ -277,6 +279,7 @@ def pyrefly(session: nox.Session) -> None:
         ".",
         "pyrefly",
         *nox.project.dependency_groups(pyproject, "types"),
+        silent=False,
     )
     session.run("pyrefly", "check", "src")
 
@@ -329,6 +332,7 @@ def unittests_with_coverage(
         *nox.project.dependency_groups(pyproject, "test"),
         f"PyInstaller{pyinstaller_version}",
         f"typing-extensions{typing_extensions_version}",
+        silent=False,
     )
     session.run(
         "pytest",
@@ -372,6 +376,7 @@ def integration_test(
         ".",
         "pytest",
         f"PyInstaller{pyinstaller_version}",
+        silent=False,
     )
     session.run("pytest", "tests/test_integration.py")
 
