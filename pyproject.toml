@@ -42,15 +42,15 @@ dependencies = [
 
 [dependency-groups]
 docs = ["pdoc>=15.0.4"]
-lint = ["black>=24.8.0", "flake8>=5.0.4", "ruff>=0.12.11"]
-test = ["nox[uv]>=2025.5.1", "pytest-cov>=5.0.0"]
+lint = ["black>=25.11.0", "flake8>=7.3.0", "ruff>=0.14.6"]
+test = ["nox[uv]>=2025.11.12", "pytest-cov>=7.0.0"]
 typecheck = [
-    "mypy>=1.14.1",
-    "pyrefly>=0.30.0",
-    "pyright>=1.1.404",
-    "types-pyinstaller>=6.11.0.20241028",
+    "mypy>=1.19.0",
+    "pyrefly>=0.43.1",
+    "pyright>=1.1.407",
+    "types-pyinstaller>=6.17.0.20251127",
 ]
-types = ["types-pyinstaller>=6.15.0.20250822"]
+types = ["types-pyinstaller>=6.17.0.20251127"]
 
 [project.urls]
 "Homepage" = "https://github.com/ReggX/versioninfo_helper"

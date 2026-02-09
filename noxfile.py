@@ -81,7 +81,9 @@ def _self_check_Python_versions(session: nox.Session) -> None:
             "PYTHON_VERSION_MATRIX and PYINSTALLER_MIN_VERSION keys must match"
         )
     pyproject = nox.project.load_toml("pyproject.toml")
-    classifieers: list[str] = pyproject.get("project", {}).get("classifiers", [])
+    classifieers: list[str] = pyproject.get("project", {}).get(
+        "classifiers", []
+    )
     toml_versions: list[str] = [
         line.removeprefix("Programming Language :: Python :: ")
         for line in classifieers
@@ -320,6 +322,16 @@ def unittests_with_coverage(
     """
     Run the unit tests with coverage using pytest-cov.
     """
+    # Pyinstaller < 6 needs a workaround to include the pkg_resources module
+    # used in PyInstaller. It was formerly included in setuptools, but has been
+    # removed in setuptools 82.
+    additional_dependencies: list[str] = []
+    if pyinstaller_version in [
+        "{%MIN_VERSION%}",
+        "<6.0",
+    ]:
+        additional_dependencies = ["setuptools<82"]
+
     if pyinstaller_version == "{%MIN_VERSION%}":
         assert isinstance(session.python, str)
         pyinstaller_version = PYINSTALLER_MIN_VERSION[session.python]
@@ -332,8 +344,10 @@ def unittests_with_coverage(
         *nox.project.dependency_groups(pyproject, "test"),
         f"PyInstaller{pyinstaller_version}",
         f"typing-extensions{typing_extensions_version}",
+        *additional_dependencies,
         silent=False,
     )
+
     session.run(
         "pytest",
         "--cov",
@@ -366,6 +380,16 @@ def integration_test(
     Run the integration tests.
     Compiles an executable and checks the versioninfo resource.
     """
+    # Pyinstaller < 6 needs a workaround to include the pkg_resources module
+    # used in PyInstaller. It was formerly included in setuptools, but has been
+    # removed in setuptools 82.
+    additional_dependencies: list[str] = []
+    if pyinstaller_version in [
+        "{%MIN_VERSION%}",
+        "<6.0",
+    ]:
+        additional_dependencies = ["setuptools<82"]
+
     if pyinstaller_version == "{%MIN_VERSION%}":
         assert isinstance(session.python, str)
         pyinstaller_version = PYINSTALLER_MIN_VERSION[session.python]
@@ -376,8 +400,10 @@ def integration_test(
         ".",
         "pytest",
         f"PyInstaller{pyinstaller_version}",
+        *additional_dependencies,
         silent=False,
     )
+
     session.run("pytest", "tests/test_integration.py")
 
 
