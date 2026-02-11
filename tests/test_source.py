@@ -1,6 +1,6 @@
 import datetime as dt
 import re
-
+import sys
 
 # ------------------------------------------------------------------------------
 
@@ -60,8 +60,7 @@ def test_filetime_to_datetime_known_value() -> None:
 
 
 def test_filetime_to_datetime_round_trip() -> None:
-    from versioninfo_helper import datetime_to_filetime
-    from versioninfo_helper import filetime_to_datetime
+    from versioninfo_helper import datetime_to_filetime, filetime_to_datetime
 
     original_dt = dt.datetime(2022, 5, 15, 12, 30, 45, tzinfo=dt.timezone.utc)
     filetime_rt: int = datetime_to_filetime(original_dt)
@@ -73,8 +72,7 @@ def test_filetime_to_datetime_round_trip() -> None:
 
 
 def test_filetime_to_datetime_different_timezone() -> None:
-    from versioninfo_helper import datetime_to_filetime
-    from versioninfo_helper import filetime_to_datetime
+    from versioninfo_helper import datetime_to_filetime, filetime_to_datetime
 
     original_dt_tz = dt.datetime(
         2022,
@@ -139,9 +137,11 @@ def test_datetime_to_filetime_tuple_different_timezone() -> None:
 def test_create_StringFileInfo_table_empty() -> None:
     from PyInstaller.utils.win32.versioninfo import StringTable
 
-    from versioninfo_helper import CharsetCode
-    from versioninfo_helper import LanguageID
-    from versioninfo_helper import create_StringFileInfo_table
+    from versioninfo_helper import (
+        CharsetCode,
+        LanguageID,
+        create_StringFileInfo_table,
+    )
 
     st: StringTable = create_StringFileInfo_table(
         LanguageID.US_English, CharsetCode.Unicode
@@ -159,9 +159,11 @@ def test_create_StringFileInfo_table_empty() -> None:
 def test_create_StringFileInfo_table_with_fields() -> None:
     from PyInstaller.utils.win32.versioninfo import StringTable
 
-    from versioninfo_helper import CharsetCode
-    from versioninfo_helper import LanguageID
-    from versioninfo_helper import create_StringFileInfo_table
+    from versioninfo_helper import (
+        CharsetCode,
+        LanguageID,
+        create_StringFileInfo_table,
+    )
 
     st: StringTable = create_StringFileInfo_table(
         LanguageID.Greek,
@@ -205,9 +207,7 @@ def test_create_StringFileInfo_table_with_fields() -> None:
 def test_create_VarStruct_single_translation() -> None:
     from PyInstaller.utils.win32.versioninfo import VarStruct
 
-    from versioninfo_helper import CharsetCode
-    from versioninfo_helper import LanguageID
-    from versioninfo_helper import create_VarStruct
+    from versioninfo_helper import CharsetCode, LanguageID, create_VarStruct
 
     vs: VarStruct = create_VarStruct(LanguageID.US_English, CharsetCode.Unicode)
     assert isinstance(vs, VarStruct)
@@ -221,9 +221,7 @@ def test_create_VarStruct_single_translation() -> None:
 def test_create_VarStruct_multiple_translations() -> None:
     from PyInstaller.utils.win32.versioninfo import VarStruct
 
-    from versioninfo_helper import CharsetCode
-    from versioninfo_helper import LanguageID
-    from versioninfo_helper import create_VarStruct
+    from versioninfo_helper import CharsetCode, LanguageID, create_VarStruct
 
     vs: VarStruct = create_VarStruct(
         LanguageID.Greek,
@@ -328,12 +326,14 @@ VSVersionInfo(
 def test_create_VersionInfo_with_full_details() -> None:
     from PyInstaller.utils.win32.versioninfo import VSVersionInfo
 
-    from versioninfo_helper import CharsetCode
-    from versioninfo_helper import FileFlags
-    from versioninfo_helper import FileOS
-    from versioninfo_helper import FileType
-    from versioninfo_helper import LanguageID
-    from versioninfo_helper import create_VersionInfo
+    from versioninfo_helper import (
+        CharsetCode,
+        FileFlags,
+        FileOS,
+        FileType,
+        LanguageID,
+        create_VersionInfo,
+    )
 
     vi: VSVersionInfo = create_VersionInfo(
         (1, 2, 3, 4),
@@ -436,30 +436,51 @@ def test_create_VersionInfo_invalid_prodvers() -> None:
 
 
 def test_deprecated_StringFileInfo_Dict() -> None:
-    from versioninfo_helper import StringFileInfo_Dict
-    from versioninfo_helper import StringFileInfoDict
+    from versioninfo_helper import StringFileInfo_Dict, StringFileInfoDict
 
     assert hasattr(StringFileInfo_Dict, "__deprecated__")
 
-    assert (
-        StringFileInfo_Dict.__annotations__
-        == StringFileInfoDict.__annotations__
-    )
+    if sys.version_info >= (3, 14):
+        from annotationlib import Format, get_annotations
+
+        old_annotations: dict[str, str] = get_annotations(
+            StringFileInfo_Dict, format=Format.STRING
+        )
+        new_annotations: dict[str, str] = get_annotations(
+            StringFileInfoDict, format=Format.STRING
+        )
+    else:
+        old_annotations = StringFileInfo_Dict.__annotations__
+        new_annotations = StringFileInfoDict.__annotations__
+
+    assert old_annotations == new_annotations
 
 
 # ------------------------------------------------------------------------------
 
 
 def test_deprecated_VersionInfo_Strings_Dict() -> None:
-    from versioninfo_helper import VersionInfo_Strings_Dict
-    from versioninfo_helper import VersionInfoStringsDict
+    from versioninfo_helper import (
+        VersionInfo_Strings_Dict,
+        VersionInfoStringsDict,
+    )
 
     assert hasattr(VersionInfo_Strings_Dict, "__deprecated__")
 
-    assert (
-        VersionInfo_Strings_Dict.__annotations__
-        == VersionInfoStringsDict.__annotations__
-    )
+    if sys.version_info >= (3, 14):
+        from annotationlib import Format, get_annotations
+
+        old_annotations: dict[str, str] = get_annotations(
+            VersionInfo_Strings_Dict, format=Format.STRING
+        )
+        new_annotations: dict[str, str] = get_annotations(
+            VersionInfoStringsDict, format=Format.STRING
+        )
+    else:
+        old_annotations = VersionInfo_Strings_Dict.__annotations__
+        new_annotations = VersionInfoStringsDict.__annotations__
+
+    assert old_annotations == new_annotations
 
 
 # ------------------------------------------------------------------------------
