@@ -18,6 +18,7 @@ PYTHON_VERSION_MATRIX: list[str] = [
     "3.12",
     "3.13",
     "3.14",
+    "3.15",
 ]
 PYTHON_OLDEST_NEWEST: list[str] = [
     PYTHON_VERSION_MATRIX[0],
@@ -36,12 +37,53 @@ PYINSTALLER_MIN_VERSION: dict[str, str] = {
     "3.12": "==5.13",
     "3.13": "==5.13",
     "3.14": "==5.13",
+    "3.15": "==5.13",
 }
 TYPING_EXTENSIONS_VERSION_MATRIX: list[str] = [
     "==4.13.2",
     "<5.0",
 ]
 nox.options.default_venv_backend = VENV_BACKEND
+
+
+# HELPER: SOFTEN FAIL IN PRE-RELEASE PYTHON ------------------------------------
+
+
+def softfail_prerelease(func):
+    """Decorator inserted after @nox.session to wrap prerelease logic."""
+    import shlex
+    import nox.command
+    import functools
+
+    @functools.wraps(func)
+    def wrapper(session: nox.Session, *args, **kwargs):
+        result: str | None = session.run(
+            *shlex.split(
+                'python -c "import sys;print(sys.version_info.releaselevel)"'
+            ),
+            silent=True,
+        )
+        if not result:
+            session.error("Unable to detect release level of Python install")
+        unstable: bool = result.strip() not in ("final", "candidate")
+        # --- run the wrapped session as usual ---
+        if not unstable:
+            return func(session, *args, **kwargs)
+        # --- prerelease-aware execution ---
+        try:
+            return func(session, *args, **kwargs)
+        except nox.command.CommandFailed as e:
+            # --- prerelease-aware error handling ---
+            if unstable:
+                title = "Downgraded pre-release failure"
+                print(
+                    f"::warning title={title}::"
+                    f"{session.name}: {e}"
+                )
+                session.skip("Pre-release Python soft fail")
+            raise
+
+    return wrapper
 
 
 # SELF CHECK -------------------------------------------------------------------
@@ -226,6 +268,7 @@ def ruff_format(session: nox.Session) -> None:
     python=PYTHON_VERSION_MATRIX,
     tags=["typecheck", "mypy", "entrypoint"],
 )
+@softfail_prerelease
 def mypy(session: nox.Session) -> None:
     """
     Typecheck with mypy.
@@ -248,6 +291,7 @@ def mypy(session: nox.Session) -> None:
     python=PYTHON_VERSION_MATRIX,
     tags=["typecheck", "pyright", "entrypoint"],
 )
+@softfail_prerelease
 def pyright(session: nox.Session) -> None:
     """
     Typecheck with pyright.
@@ -270,6 +314,7 @@ def pyright(session: nox.Session) -> None:
     python=PYTHON_VERSION_MATRIX,
     tags=["typecheck", "pyrefly", "entrypoint"],
 )
+@softfail_prerelease
 def pyrefly(session: nox.Session) -> None:
     """
     Typecheck with pyrefly.
@@ -314,6 +359,7 @@ def clean_old_coverage(session: nox.Session) -> None:
 )
 @nox.parametrize("pyinstaller_version", PYINSTALLER_VERSION_MATRIX)
 @nox.parametrize("typing_extensions_version", TYPING_EXTENSIONS_VERSION_MATRIX)
+@softfail_prerelease
 def unittests_with_coverage(
     session: nox.Session,
     pyinstaller_version: str,
@@ -359,6 +405,7 @@ def unittests_with_coverage(
         "--cov-report",
         "term-missing",
         "tests/test_source.py",
+        "-vv",
     )
 
 
@@ -372,6 +419,7 @@ def unittests_with_coverage(
     tags=["integration-tests", "entrypoint"],
 )
 @nox.parametrize("pyinstaller_version", PYINSTALLER_VERSION_MATRIX)
+@softfail_prerelease
 def integration_test(
     session: nox.Session,
     pyinstaller_version: str,
@@ -404,7 +452,7 @@ def integration_test(
         silent=False,
     )
 
-    session.run("pytest", "tests/test_integration.py")
+    session.run("pytest", "tests/test_integration.py", "-vv")
 
 
 # BUILD DOCS -------------------------------------------------------------------
