@@ -4,6 +4,60 @@ Helper Script to generate VSVersionInfo for PyInstaller.
 Either use VSVersionInfo object created by create_VersionInfo(...) directly
 in spec file or write to file with str(VSVersionInfo object) to get a
 representation that PyInstaller can eval() and embed into your exe.
+
+Example usage:
+```python
+# >>> Insert into your PyInstaller spec file
+import sys
+import versioninfo_helper
+
+VERSION_INFO = versioninfo_helper.create_VersionInfo(
+    (1, 0, 0, 0),  # version tuple
+    strings=[
+        {
+            "lang_id": versioninfo_helper.LanguageID.US_English,
+            "charset_id": versioninfo_helper.CharsetCode.Unicode,
+            "fields": {
+                "CompanyName": 'Your Company Name LLC',
+                'FileDescription': 'App Description',
+                'FileVersion': '1.0.0.0',
+                'InternalName': 'AppName.exe',
+                'LegalCopyright': '© 2026 Your Company Name LLC',
+                'OriginalFilename': 'AppName.exe',
+                'ProductName': 'AppName - Part of Product',
+                'ProductVersion': '1.0.0.0',
+            }
+        }
+    ]
+)
+
+del sys.modules['versioninfo_helper']  # optional
+# <<< the rest is the usual spec file
+
+a = Analysis(
+    ...
+)
+pyz = PYZ(
+    ...
+)
+exe = EXE(
+    pyz,
+    a.scripts,
+    a.binaries,
+    a.zipfiles,
+    a.datas,
+    ...
+    version=VERSION_INFO  #  <-- modify this line in your spec file
+)
+```
+
+Since spec files are just Python scripts, you can also dynamically generate \
+the contents of your version info. Ideas to get you started:
+ - Sync your executable version with your package version (pyproject.toml, \
+setup.py, etc.)
+ - Use git tags or commit hashes to generate version info
+ - Automatically update the copyright year to the current year
+
 """
 
 from __future__ import annotations
@@ -1229,7 +1283,7 @@ def create_VersionInfo(
 
         A sequence of dictionaries containing keys:
 
-        + `lang_id`: LanguageCode | int
+        + `lang_id`: LanguageID | int
 
         + `charset_id`: CharsetCode | int
 
