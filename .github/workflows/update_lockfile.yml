@@ -1,0 +1,40 @@
+name: ⌚ Weekly Lockfile Update
+
+on:
+  schedule:
+    - cron: "47 14 * * 5"  # Every Friday at 14:47 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-lockfile:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout updated-lockfile branch
+        uses: actions/checkout@v4
+        with:
+          ref: updated-lockfile
+          token: ${{ secrets.LOCKFILE_BOT_TOKEN }}
+          persist-credentials: true  # default, but explicit for clarity
+
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Sync dependencies and update lockfile
+        run: uv sync -U --all-groups
+
+      - name: Commit changes if any
+        run: |
+          if [[ -n "$(git status --porcelain)" ]]; then
+            DATE=$(date -u +'%Y-%m-%d')
+            git config user.name 'github-actions[bot]'
+            git config user.email 'github-actions[bot]@users.noreply.github.com'
+            git add -A
+            git commit -m "Update lock file [$DATE]"
+            git push origin updated-lockfile
+          else
+            echo "No changes to commit"
+          fi
