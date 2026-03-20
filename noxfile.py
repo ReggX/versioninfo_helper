@@ -202,20 +202,6 @@ def ruff_check(session: nox.Session) -> None:
 
 
 @nox.session(
-    default=False,
-    reuse_venv=REUSE_VENV,
-    venv_backend=VENV_BACKEND,
-    tags=["lint"],
-)
-def black_check(session: nox.Session) -> None:
-    """
-    Check formatting with black.
-    """
-    session.install("-U", "black")
-    session.run("black", "--check", "./src")
-
-
-@nox.session(
     reuse_venv=REUSE_VENV,
     venv_backend=VENV_BACKEND,
     tags=["lint", "entrypoint"],
@@ -229,20 +215,6 @@ def ruff_format_check(session: nox.Session) -> None:
 
 
 # FORMATTERS -------------------------------------------------------------------
-
-
-@nox.session(
-    default=False,
-    reuse_venv=REUSE_VENV,
-    venv_backend=VENV_BACKEND,
-    tags=["format"],
-)
-def black(session: nox.Session) -> None:
-    """
-    Format code with black.
-    """
-    session.install("-U", "black")
-    session.run("black", "./src")
 
 
 @nox.session(

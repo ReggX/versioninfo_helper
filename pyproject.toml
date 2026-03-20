@@ -42,7 +42,7 @@ dependencies = [
 
 [dependency-groups]
 docs = ["pdoc>=15.0.4"]
-lint = ["black>=26.3.1", "flake8>=7.3.0", "ruff>=0.14.6"]
+lint = ["flake8>=7.3.0", "ruff>=0.14.6"]
 test = ["nox[uv]>=2025.11.12", "pytest-cov>=7.0.0"]
 typecheck = [
     "mypy>=1.19.0",
