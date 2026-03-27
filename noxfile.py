@@ -78,7 +78,7 @@ def softfail_prerelease(func):
                 title = "Downgraded pre-release failure"
                 print(
                     f"::warning title={title}::"
-                    f"{session.name}: {e}"
+                    f"{title} for session {session.name}: {e}"
                 )
                 session.skip("Pre-release Python soft fail")
             raise
