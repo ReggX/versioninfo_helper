@@ -3,14 +3,19 @@
 # ///
 
 
+from collections import namedtuple
+
 import nox
 
 
 nox.needs_version = ">=2025.5.1"
 
-
+# NOX CONFIG -------------------------------------------------------------------
 REUSE_VENV = False
 VENV_BACKEND = "uv|virtualenv"
+nox.options.default_venv_backend = VENV_BACKEND
+
+# VERSION MATRICES -------------------------------------------------------------
 PYTHON_VERSION_MATRIX: list[str] = [
     "3.9",
     "3.10",
@@ -20,30 +25,182 @@ PYTHON_VERSION_MATRIX: list[str] = [
     "3.14",
     "3.15",
 ]
-PYTHON_OLDEST_NEWEST: list[str] = [
-    PYTHON_VERSION_MATRIX[0],
-    PYTHON_VERSION_MATRIX[-1],
-]
 PYINSTALLER_VERSION_MATRIX: list[str] = [
-    "{%MIN_VERSION%}",
-    "<6.0",
-    "==6.0",
-    "<7.0",
+    # The goal of this matrix is to test test the lowest and highest possible
+    # version of each major version of PyInstaller, to catch any
+    # incompatibilities that may arise with new Python versions.
+    # Since the minimum usable PyInstaller version for each Python version is
+    # different, we have multiple minimum versions in the matrix, which are
+    # skipped thanks to the AUTO_SKIPS list and the skip_combination helper
+    # function.
+    #
+    # ----- 5.x
+    "==5.0",  #  Minimum version for Python 3.9, 3.10
+    "==5.5",  #  Minimum version for Python 3.11
+    "==5.13",  # Minimum version for Python 3.12, 3.13, 3.14
+    "<6.0",  #   Highest 5.x version
+    #
+    # ----- 6.x
+    "==6.0",  #  Lowest 6.x version
+    # Minimum version for Python 3.15 unknown
+    # - Current status (2026-03-27): Latest (6.19) still incompatible
+    "<7.0",  #   Highest 6.x version
+    #
+    # Once PyInstaller 7.0 is released, add "==7.0" and "<8.0" to the matrix,
+    # and update the AUTO_SKIPS list accordingly.
 ]
-PYINSTALLER_MIN_VERSION: dict[str, str] = {
-    "3.9": "==5.0",
-    "3.10": "==5.0",
-    "3.11": "==5.5",
-    "3.12": "==5.13",
-    "3.13": "==5.13",
-    "3.14": "==5.13",
-    "3.15": "==5.13",
-}
 TYPING_EXTENSIONS_VERSION_MATRIX: list[str] = [
-    "==4.13.2",
-    "<5.0",
+    # ----- 4.x
+    "==4.13.2",  # Lowest 4.x version
+    "<5.0",  #     Highest 4.x version
 ]
-nox.options.default_venv_backend = VENV_BACKEND
+
+VerCombi = namedtuple(
+    "VerCombi",
+    ["python", "pyinstaller", "typing_extensions"],
+)
+# Using the builtin `any` as an "any version matches" sentinel
+
+AUTO_SKIPS: list[VerCombi] = [
+    # ===== Below Minimum versions =====
+    # Since we have different minimum PyInstaller versions for different
+    # Python versions, we need to skip some combinations of Python and
+    # PyInstaller versions that are known to be incompatible. The
+    # typing-extensions version is not relevant for the incompatibility, so
+    # we set it to any to indicate that it matches
+    #
+    # ===== Above Maximum versions =====
+    # Currently unuused since all our dependencies support all vof our
+    # supported Python versions
+    #
+    # ===== Cut for efficiency =====
+    # In cases where we already test a lower and higher version in the same
+    # major version, testing the middle versions is redundant and can be
+    # skipped for efficiency.
+    #
+    #
+    # ----- Python 3.9 -----
+    # --- below minimum
+    # none
+    # --- cut for efficiency
+    VerCombi(python="3.9", pyinstaller="==5.5", typing_extensions=any),
+    VerCombi(python="3.9", pyinstaller="==5.13", typing_extensions=any),
+    # --- above maximum
+    # none
+    #
+    #
+    # ----- Python 3.10 -----
+    # --- below minimum
+    # none
+    # --- cut for efficiency
+    VerCombi(python="3.10", pyinstaller="==5.5", typing_extensions=any),
+    VerCombi(python="3.10", pyinstaller="==5.13", typing_extensions=any),
+    # --- above maximum
+    # none
+    #
+    #
+    # ----- Python 3.11 -----
+    # --- below minimum
+    VerCombi(python="3.11", pyinstaller="==5.0", typing_extensions=any),
+    # --- cut for efficiency
+    VerCombi(python="3.11", pyinstaller="==5.13", typing_extensions=any),
+    # --- above maximum
+    # none
+    #
+    #
+    # ----- Python 3.12 -----
+    # --- below minimum
+    VerCombi(python="3.12", pyinstaller="==5.0", typing_extensions=any),
+    VerCombi(python="3.12", pyinstaller="==5.5", typing_extensions=any),
+    # --- cut for efficiency
+    # none
+    # --- above maximum
+    # none
+    #
+    #
+    # ----- Python 3.13 -----
+    # --- below minimum
+    VerCombi(python="3.13", pyinstaller="==5.0", typing_extensions=any),
+    VerCombi(python="3.13", pyinstaller="==5.5", typing_extensions=any),
+    # --- cut for efficiency
+    # none
+    # --- above maximum
+    # none
+    #
+    #
+    # ----- Python 3.14 -----
+    # --- below minimum
+    VerCombi(python="3.14", pyinstaller="==5.0", typing_extensions=any),
+    VerCombi(python="3.14", pyinstaller="==5.5", typing_extensions=any),
+    # --- cut for efficiency
+    # none
+    # --- above maximum
+    # none
+    #
+    #
+    # ----- Python 3.15 -----
+    # --- below minimum
+    VerCombi(python="3.15", pyinstaller="==5.0", typing_extensions=any),
+    VerCombi(python="3.15", pyinstaller="==5.5", typing_extensions=any),
+    VerCombi(python="3.15", pyinstaller="==5.13", typing_extensions=any),
+    VerCombi(python="3.15", pyinstaller="<6.0", typing_extensions=any),
+    VerCombi(python="3.15", pyinstaller="==6.0", typing_extensions=any),
+    # --- cut for efficiency
+    # none
+    # --- above maximum
+    # none
+]
+
+
+# HELPER: SKIP NON INCOMPATIBLE COMNINATIONS -----------------------------------
+
+
+def skip_combination(
+    python_version: str | None = None,
+    pyinstaller_version: str | None = None,
+    typing_extensions_version: str | None = None,
+) -> bool:
+    """
+    Skip the session if the combination of Python, PyInstaller, and
+    typing-extensions versions is known to be incompatible.
+    """
+
+    for combi in AUTO_SKIPS:
+        if (
+            (
+                python_version is None
+                or combi.python is any
+                or combi.python == python_version
+            )
+            and (
+                pyinstaller_version is None
+                or combi.pyinstaller is any
+                or combi.pyinstaller == pyinstaller_version
+            )
+            and (
+                typing_extensions_version is None
+                or combi.typing_extensions is any
+                or combi.typing_extensions == typing_extensions_version
+            )
+        ):
+            return True
+    return False
+
+
+# HELPER: REQUIRE PKG_RESSOURCES -----------------------------------------------
+
+
+def require_pkg_resources(pyinstaller_version: str) -> bool:
+    """
+    Return True if the given PyInstaller version requires the pkg_resources
+    workaround, which is the case for all versions < 6.0.
+    """
+    return pyinstaller_version in [
+        "==5.0",
+        "==5.5",
+        "==5.13",
+        "<6.0",
+    ]
 
 
 # HELPER: SOFTEN FAIL IN PRE-RELEASE PYTHON ------------------------------------
@@ -116,12 +273,8 @@ def self_check(session: nox.Session) -> None:
 )
 def _self_check_Python_versions(session: nox.Session) -> None:
     """
-    Check if the PyInstaller minimum version lookup table needs to be updated.
+    Check if all supported Python versions are tested.
     """
-    if set(PYTHON_VERSION_MATRIX) != set(PYINSTALLER_MIN_VERSION.keys()):
-        session.error(
-            "PYTHON_VERSION_MATRIX and PYINSTALLER_MIN_VERSION keys must match"
-        )
     pyproject = nox.project.load_toml("pyproject.toml")
     classifieers: list[str] = pyproject.get("project", {}).get(
         "classifiers", []
@@ -325,12 +478,23 @@ def clean_old_coverage(session: nox.Session) -> None:
 @nox.session(
     reuse_venv=REUSE_VENV,
     venv_backend=VENV_BACKEND,
-    python=PYTHON_VERSION_MATRIX,
     tags=["unittests", "coverage"],
     requires=["clean_old_coverage"],
 )
-@nox.parametrize("pyinstaller_version", PYINSTALLER_VERSION_MATRIX)
-@nox.parametrize("typing_extensions_version", TYPING_EXTENSIONS_VERSION_MATRIX)
+@nox.parametrize(
+    "python,pyinstaller_version,typing_extensions_version",
+    [
+        (python, pyinstaller_version, typing_extensions_version)
+        for python in PYTHON_VERSION_MATRIX
+        for pyinstaller_version in PYINSTALLER_VERSION_MATRIX
+        for typing_extensions_version in TYPING_EXTENSIONS_VERSION_MATRIX
+        if not skip_combination(
+            python_version=python,
+            pyinstaller_version=pyinstaller_version,
+            typing_extensions_version=typing_extensions_version,
+        )
+    ],
+)
 @softfail_prerelease
 def unittests_with_coverage(
     session: nox.Session,
@@ -344,15 +508,8 @@ def unittests_with_coverage(
     # used in PyInstaller. It was formerly included in setuptools, but has been
     # removed in setuptools 82.
     additional_dependencies: list[str] = []
-    if pyinstaller_version in [
-        "{%MIN_VERSION%}",
-        "<6.0",
-    ]:
+    if require_pkg_resources(pyinstaller_version):
         additional_dependencies = ["setuptools<82"]
-
-    if pyinstaller_version == "{%MIN_VERSION%}":
-        assert isinstance(session.python, str)
-        pyinstaller_version = PYINSTALLER_MIN_VERSION[session.python]
 
     pyproject = nox.project.load_toml("pyproject.toml")
     session.install(
@@ -387,10 +544,20 @@ def unittests_with_coverage(
 @nox.session(
     reuse_venv=REUSE_VENV,
     venv_backend=VENV_BACKEND,
-    python=PYTHON_VERSION_MATRIX,
     tags=["integration-tests", "entrypoint"],
 )
-@nox.parametrize("pyinstaller_version", PYINSTALLER_VERSION_MATRIX)
+@nox.parametrize(
+    "python,pyinstaller_version",
+    [
+        (python, pyinstaller_version)
+        for python in PYTHON_VERSION_MATRIX
+        for pyinstaller_version in PYINSTALLER_VERSION_MATRIX
+        if not skip_combination(
+            python_version=python,
+            pyinstaller_version=pyinstaller_version,
+        )
+    ],
+)
 @softfail_prerelease
 def integration_test(
     session: nox.Session,
@@ -404,15 +571,8 @@ def integration_test(
     # used in PyInstaller. It was formerly included in setuptools, but has been
     # removed in setuptools 82.
     additional_dependencies: list[str] = []
-    if pyinstaller_version in [
-        "{%MIN_VERSION%}",
-        "<6.0",
-    ]:
+    if require_pkg_resources(pyinstaller_version):
         additional_dependencies = ["setuptools<82"]
-
-    if pyinstaller_version == "{%MIN_VERSION%}":
-        assert isinstance(session.python, str)
-        pyinstaller_version = PYINSTALLER_MIN_VERSION[session.python]
 
     session.install(
         "-U",
