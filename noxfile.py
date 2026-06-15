@@ -42,8 +42,7 @@ PYINSTALLER_VERSION_MATRIX: list[str] = [
     #
     # ----- 6.x
     "==6.0",  #  Lowest 6.x version
-    # Minimum version for Python 3.15 unknown
-    # - Current status (2026-03-27): Latest (6.19) still incompatible
+    "==6.21",  # Minimum version for Python 3.15
     "<7.0",  #   Highest 6.x version
     #
     # Once PyInstaller 7.0 is released, add "==7.0" and "<8.0" to the matrix,
@@ -85,6 +84,7 @@ AUTO_SKIPS: list[VerCombi] = [
     # --- cut for efficiency
     VerCombi(python="3.9", pyinstaller="==5.5", typing_extensions=any),
     VerCombi(python="3.9", pyinstaller="==5.13", typing_extensions=any),
+    VerCombi(python="3.9", pyinstaller="==6.21", typing_extensions=any),
     # --- above maximum
     # none
     #
@@ -95,6 +95,7 @@ AUTO_SKIPS: list[VerCombi] = [
     # --- cut for efficiency
     VerCombi(python="3.10", pyinstaller="==5.5", typing_extensions=any),
     VerCombi(python="3.10", pyinstaller="==5.13", typing_extensions=any),
+    VerCombi(python="3.10", pyinstaller="==6.21", typing_extensions=any),
     # --- above maximum
     # none
     #
@@ -104,6 +105,7 @@ AUTO_SKIPS: list[VerCombi] = [
     VerCombi(python="3.11", pyinstaller="==5.0", typing_extensions=any),
     # --- cut for efficiency
     VerCombi(python="3.11", pyinstaller="==5.13", typing_extensions=any),
+    VerCombi(python="3.11", pyinstaller="==6.21", typing_extensions=any),
     # --- above maximum
     # none
     #
@@ -113,7 +115,7 @@ AUTO_SKIPS: list[VerCombi] = [
     VerCombi(python="3.12", pyinstaller="==5.0", typing_extensions=any),
     VerCombi(python="3.12", pyinstaller="==5.5", typing_extensions=any),
     # --- cut for efficiency
-    # none
+    VerCombi(python="3.12", pyinstaller="==6.21", typing_extensions=any),
     # --- above maximum
     # none
     #
@@ -123,7 +125,7 @@ AUTO_SKIPS: list[VerCombi] = [
     VerCombi(python="3.13", pyinstaller="==5.0", typing_extensions=any),
     VerCombi(python="3.13", pyinstaller="==5.5", typing_extensions=any),
     # --- cut for efficiency
-    # none
+    VerCombi(python="3.13", pyinstaller="==6.21", typing_extensions=any),
     # --- above maximum
     # none
     #
@@ -133,7 +135,7 @@ AUTO_SKIPS: list[VerCombi] = [
     VerCombi(python="3.14", pyinstaller="==5.0", typing_extensions=any),
     VerCombi(python="3.14", pyinstaller="==5.5", typing_extensions=any),
     # --- cut for efficiency
-    # none
+    VerCombi(python="3.14", pyinstaller="==6.21", typing_extensions=any),
     # --- above maximum
     # none
     #
@@ -401,7 +403,6 @@ def mypy(session: nox.Session) -> None:
     pyproject = nox.project.load_toml("pyproject.toml")
     session.install(
         "-U",
-        "-e",
         ".",
         "mypy",
         *nox.project.dependency_groups(pyproject, "types"),
@@ -424,7 +425,6 @@ def pyright(session: nox.Session) -> None:
     pyproject = nox.project.load_toml("pyproject.toml")
     session.install(
         "-U",
-        "-e",
         ".",
         "pyright",
         *nox.project.dependency_groups(pyproject, "types"),
@@ -447,7 +447,6 @@ def pyrefly(session: nox.Session) -> None:
     pyproject = nox.project.load_toml("pyproject.toml")
     session.install(
         "-U",
-        "-e",
         ".",
         "pyrefly",
         *nox.project.dependency_groups(pyproject, "types"),
@@ -514,7 +513,7 @@ def unittests_with_coverage(
     pyproject = nox.project.load_toml("pyproject.toml")
     session.install(
         "-U",
-        "-e",
+        "-e"  # Required to report correct coverage
         ".",
         *nox.project.dependency_groups(pyproject, "test"),
         f"PyInstaller{pyinstaller_version}",
@@ -576,7 +575,6 @@ def integration_test(
 
     session.install(
         "-U",
-        "-e",
         ".",
         "pytest",
         f"PyInstaller{pyinstaller_version}",
@@ -599,7 +597,7 @@ def docs(session: nox.Session) -> None:
     """
     Build the documentation with pdoc.
     """
-    session.install("-U", "-e", ".", "pdoc")
+    session.install("-U", ".", "pdoc")
     session.run(
         "python",
         "-m",
