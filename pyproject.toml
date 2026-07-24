@@ -96,6 +96,9 @@ line-length = 80
 line-length = 80
 indent-width = 4
 
+[tool.ruff.lint.isort]
+force-single-line = true
+lines-after-imports = 2
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

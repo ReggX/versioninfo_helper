@@ -107,7 +107,8 @@ else:
     from typing_extensions import TypedDict
 
 
-__all__: list[str] = [
+__all__: list[str] = [  # ruff: ignore[RUF022]
+    # intentional sorting for docs
     "create_VersionInfo",
     "VersionTuple",
     "FileFlags",
