@@ -23,8 +23,8 @@ jobs:
       - name: Setup uv
         uses: astral-sh/setup-uv@v7
 
-      - name: Sync dependencies and update lockfile
-        run: uv sync -U --all-groups
+      - name: Update lockfile without installing
+        run: uv lock -U --exclude-newer 3d
 
       - name: Commit changes if any
         run: |
