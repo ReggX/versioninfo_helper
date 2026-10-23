@@ -26,6 +26,11 @@ jobs:
       - name: Update lockfile without installing
         run: uv lock -U --exclude-newer 3d
 
+      - name: Simplify lockfile for cleaner diffs
+        run: |
+          yq -p toml -o toml 'del(.. | select(has("wheels") or has("sdist")) | (.wheels, .sdist))' uv.lock > simplified-uvlock.toml
+          uvx taplo fmt simplified-uvlock.toml
+
       - name: Commit changes if any
         run: |
           if [[ -n "$(git status --porcelain)" ]]; then
