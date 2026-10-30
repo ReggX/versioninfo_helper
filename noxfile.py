@@ -17,13 +17,12 @@ nox.options.default_venv_backend = VENV_BACKEND
 
 # VERSION MATRICES -------------------------------------------------------------
 PYTHON_VERSION_MATRIX: list[str] = [
-    "3.9",
-    "3.10",
     "3.11",
     "3.12",
     "3.13",
     "3.14",
     "3.15",
+    "3.16",
 ]
 PYINSTALLER_VERSION_MATRIX: list[str] = [
     # The goal of this matrix is to test test the lowest and highest possible
@@ -35,7 +34,6 @@ PYINSTALLER_VERSION_MATRIX: list[str] = [
     # function.
     #
     # ----- 5.x
-    "==5.0",  #  Minimum version for Python 3.9, 3.10
     "==5.5",  #  Minimum version for Python 3.11
     "==5.13",  # Minimum version for Python 3.12, 3.13, 3.14
     "<6.0",  #   Highest 5.x version
@@ -78,31 +76,9 @@ AUTO_SKIPS: list[VerCombi] = [
     # skipped for efficiency.
     #
     #
-    # ----- Python 3.9 -----
-    # --- below minimum
-    # none
-    # --- cut for efficiency
-    VerCombi(python="3.9", pyinstaller="==5.5", typing_extensions=any),
-    VerCombi(python="3.9", pyinstaller="==5.13", typing_extensions=any),
-    VerCombi(python="3.9", pyinstaller="==6.21", typing_extensions=any),
-    # --- above maximum
-    # none
-    #
-    #
-    # ----- Python 3.10 -----
-    # --- below minimum
-    # none
-    # --- cut for efficiency
-    VerCombi(python="3.10", pyinstaller="==5.5", typing_extensions=any),
-    VerCombi(python="3.10", pyinstaller="==5.13", typing_extensions=any),
-    VerCombi(python="3.10", pyinstaller="==6.21", typing_extensions=any),
-    # --- above maximum
-    # none
-    #
-    #
     # ----- Python 3.11 -----
     # --- below minimum
-    VerCombi(python="3.11", pyinstaller="==5.0", typing_extensions=any),
+    # none
     # --- cut for efficiency
     VerCombi(python="3.11", pyinstaller="==5.13", typing_extensions=any),
     VerCombi(python="3.11", pyinstaller="==6.21", typing_extensions=any),
@@ -112,7 +88,6 @@ AUTO_SKIPS: list[VerCombi] = [
     #
     # ----- Python 3.12 -----
     # --- below minimum
-    VerCombi(python="3.12", pyinstaller="==5.0", typing_extensions=any),
     VerCombi(python="3.12", pyinstaller="==5.5", typing_extensions=any),
     # --- cut for efficiency
     VerCombi(python="3.12", pyinstaller="==6.21", typing_extensions=any),
@@ -122,7 +97,6 @@ AUTO_SKIPS: list[VerCombi] = [
     #
     # ----- Python 3.13 -----
     # --- below minimum
-    VerCombi(python="3.13", pyinstaller="==5.0", typing_extensions=any),
     VerCombi(python="3.13", pyinstaller="==5.5", typing_extensions=any),
     # --- cut for efficiency
     VerCombi(python="3.13", pyinstaller="==6.21", typing_extensions=any),
@@ -132,7 +106,6 @@ AUTO_SKIPS: list[VerCombi] = [
     #
     # ----- Python 3.14 -----
     # --- below minimum
-    VerCombi(python="3.14", pyinstaller="==5.0", typing_extensions=any),
     VerCombi(python="3.14", pyinstaller="==5.5", typing_extensions=any),
     # --- cut for efficiency
     VerCombi(python="3.14", pyinstaller="==6.21", typing_extensions=any),
@@ -142,11 +115,21 @@ AUTO_SKIPS: list[VerCombi] = [
     #
     # ----- Python 3.15 -----
     # --- below minimum
-    VerCombi(python="3.15", pyinstaller="==5.0", typing_extensions=any),
     VerCombi(python="3.15", pyinstaller="==5.5", typing_extensions=any),
     VerCombi(python="3.15", pyinstaller="==5.13", typing_extensions=any),
     VerCombi(python="3.15", pyinstaller="<6.0", typing_extensions=any),
     VerCombi(python="3.15", pyinstaller="==6.0", typing_extensions=any),
+    # --- cut for efficiency
+    # none
+    # --- above maximum
+    # none
+    # ----- Python 3.16 -----
+    # --- below minimum
+    VerCombi(python="3.16", pyinstaller="==5.5", typing_extensions=any),
+    VerCombi(python="3.16", pyinstaller="==5.13", typing_extensions=any),
+    VerCombi(python="3.16", pyinstaller="<6.0", typing_extensions=any),
+    VerCombi(python="3.16", pyinstaller="==6.0", typing_extensions=any),
+    VerCombi(python="3.16", pyinstaller="==6.21", typing_extensions=any),
     # --- cut for efficiency
     # none
     # --- above maximum
@@ -210,9 +193,10 @@ def require_pkg_resources(pyinstaller_version: str) -> bool:
 
 def softfail_prerelease(func):
     """Decorator inserted after @nox.session to wrap prerelease logic."""
-    import shlex
-    import nox.command
     import functools
+    import shlex
+
+    import nox.command
 
     @functools.wraps(func)
     def wrapper(session: nox.Session, *args, **kwargs):

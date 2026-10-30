@@ -80,18 +80,18 @@ from PyInstaller.utils.win32.versioninfo import VSVersionInfo
 
 
 # Python 3.10 or higher
-if sys.version_info >= (3, 10):
+if sys.version_info >= (3, 10):  # ruff: ignore[UP036]
     from typing import TypeAlias
 else:
-    from typing_extensions import TypeAlias
+    from typing_extensions import TypeAlias  # ruff: ignore[UP035]
 
 # Python 3.11 or higher
-if sys.version_info >= (3, 11):
+if sys.version_info >= (3, 11):  # ruff: ignore[UP036]
     from typing import NotRequired
     from typing import Required
 else:
-    from typing_extensions import NotRequired
-    from typing_extensions import Required
+    from typing_extensions import NotRequired  # ruff: ignore[UP035]
+    from typing_extensions import Required  # ruff: ignore[UP035]
 
 # Python 3.13 or higher
 if sys.version_info >= (3, 13):
@@ -137,7 +137,7 @@ def datetime_to_filetime(dt: datetime) -> int:
     """
 
     if dt.tzinfo is None or dt.tzinfo.utcoffset(dt) is None:
-        dt = dt.replace(tzinfo=timezone.utc)
+        dt = dt.replace(tzinfo=timezone.utc)  # ruff: ignore[UP017]
 
     filetime = EPOCH_AS_FILETIME + (int(dt.timestamp()) * HUNDREDS_OF_NS)
     return filetime + (dt.microsecond * 10)
@@ -155,7 +155,7 @@ def filetime_to_datetime(filetime: int) -> datetime:
     # Get seconds and remainder in terms of Unix epoch
     s, ns100 = divmod(filetime - EPOCH_AS_FILETIME, HUNDREDS_OF_NS)
     # Convert to datetime object, with remainder as microseconds.
-    return datetime.fromtimestamp(s, timezone.utc).replace(
+    return datetime.fromtimestamp(s, timezone.utc).replace(  # ruff: ignore[UP017]
         microsecond=(ns100 // 10)
     )
 
@@ -1335,7 +1335,7 @@ def create_VersionInfo(
     dwFileSubtype: Final = int(subtype)
 
     if date is None:
-        date = datetime_to_filetime_tuple(datetime.now(timezone.utc))
+        date = datetime_to_filetime_tuple(datetime.now(timezone.utc))  # ruff: ignore[UP017]
     elif isinstance(date, datetime):
         date = datetime_to_filetime_tuple(date)
     dwFileDate: Final = date

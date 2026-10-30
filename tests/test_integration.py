@@ -63,7 +63,7 @@ def compile_extract_compare(
         expected_data: dict, json_data: dict, parent: str = ""
     ) -> None:
         """Compare the keys and values of two dictionaries, including nested dictionaries."""
-        for key in expected_data.keys():
+        for key in expected_data.keys():  # ruff: ignore[SIM118, PLC0206]
             if isinstance(expected_data[key], dict):
                 assert isinstance(json_data[key], dict), (
                     f"Key '{key}' ({parent}/{key}) is not a dictionary in JSON data"
