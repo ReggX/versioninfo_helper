@@ -1,0 +1,311 @@
+version = 1
+revision = 5
+requires-python = ">=3.11"
+resolution-markers = [
+  "python_full_version >= '3.15'",
+  "python_full_version == '3.14.*'",
+  "python_full_version == '3.13.*'",
+  "python_full_version == '3.12.*'",
+  "python_full_version < '3.12'",
+]
+
+[options]
+exclude-newer = "0001-01-01T00:00:00Z" # This has no effect and is included for backwards compatibility when using relative exclude-newer values.
+exclude-newer-span = "P3D"
+
+[[package]]
+name = "altgraph"
+version = "0.17.5"
+source = { registry = "https://pypi.org/simple" }
+[[package]]
+name = "argcomplete"
+version = "3.7.2"
+source = { registry = "https://pypi.org/simple" }
+[[package]]
+name = "ast-serialize"
+version = "0.13.1"
+source = { registry = "https://pypi.org/simple" }
+[[package]]
+name = "attrs"
+version = "26.1.0"
+source = { registry = "https://pypi.org/simple" }
+[[package]]
+name = "colorama"
+version = "0.4.6"
+source = { registry = "https://pypi.org/simple" }
+[[package]]
+name = "colorlog"
+version = "6.12.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [{ name = "colorama", marker = "sys_platform == 'win32'" }]
+[[package]]
+name = "coverage"
+version = "7.17.0"
+source = { registry = "https://pypi.org/simple" }
+[[package]]
+name = "dependency-groups"
+version = "1.3.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [{ name = "packaging" }]
+[[package]]
+name = "distlib"
+version = "0.4.4"
+source = { registry = "https://pypi.org/simple" }
+[[package]]
+name = "filelock"
+version = "4.2.4"
+source = { registry = "https://pypi.org/simple" }
+[[package]]
+name = "flake8"
+version = "7.4.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+  { name = "mccabe" },
+  { name = "pycodestyle" },
+  { name = "pyflakes" },
+]
+[[package]]
+name = "humanize"
+version = "4.16.0"
+source = { registry = "https://pypi.org/simple" }
+[[package]]
+name = "iniconfig"
+version = "2.3.1"
+source = { registry = "https://pypi.org/simple" }
+[[package]]
+name = "jinja2"
+version = "3.1.6"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [{ name = "markupsafe" }]
+[[package]]
+name = "librt"
+version = "0.16.0"
+source = { registry = "https://pypi.org/simple" }
+[[package]]
+name = "macholib"
+version = "1.16.4"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [{ name = "altgraph" }]
+[[package]]
+name = "markdown2"
+version = "2.5.5"
+source = { registry = "https://pypi.org/simple" }
+[[package]]
+name = "markupsafe"
+version = "3.0.4"
+source = { registry = "https://pypi.org/simple" }
+[[package]]
+name = "mccabe"
+version = "0.7.0"
+source = { registry = "https://pypi.org/simple" }
+[[package]]
+name = "mypy"
+version = "2.4.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+  { name = "ast-serialize" },
+  { name = "librt", marker = "platform_python_implementation != 'PyPy'" },
+  { name = "mypy-extensions" },
+  { name = "pathspec" },
+  { name = "typing-extensions" },
+]
+[[package]]
+name = "mypy-extensions"
+version = "1.1.0"
+source = { registry = "https://pypi.org/simple" }
+[[package]]
+name = "nodeenv"
+version = "1.11.0"
+source = { registry = "https://pypi.org/simple" }
+[[package]]
+name = "nox"
+version = "2026.10.20"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+  { name = "argcomplete" },
+  { name = "attrs" },
+  { name = "colorlog" },
+  { name = "dependency-groups" },
+  { name = "humanize" },
+  { name = "packaging" },
+  { name = "platformdirs" },
+  { name = "python-discovery" },
+  { name = "virtualenv" },
+]
+
+[package.optional-dependencies]
+uv = [{ name = "uv" }]
+[[package]]
+name = "packaging"
+version = "26.3"
+source = { registry = "https://pypi.org/simple" }
+[[package]]
+name = "pathspec"
+version = "1.1.1"
+source = { registry = "https://pypi.org/simple" }
+[[package]]
+name = "pdoc"
+version = "16.0.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+  { name = "jinja2" },
+  { name = "markdown2" },
+  { name = "markupsafe" },
+  { name = "pygments" },
+]
+[[package]]
+name = "pefile"
+version = "2024.8.26"
+source = { registry = "https://pypi.org/simple" }
+[[package]]
+name = "platformdirs"
+version = "4.13.6"
+source = { registry = "https://pypi.org/simple" }
+[[package]]
+name = "pluggy"
+version = "1.7.0"
+source = { registry = "https://pypi.org/simple" }
+[[package]]
+name = "pycodestyle"
+version = "2.15.0"
+source = { registry = "https://pypi.org/simple" }
+[[package]]
+name = "pyflakes"
+version = "4.0.3"
+source = { registry = "https://pypi.org/simple" }
+[[package]]
+name = "pygments"
+version = "2.21.0"
+source = { registry = "https://pypi.org/simple" }
+[[package]]
+name = "pyinstaller"
+version = "6.22.3"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+  { name = "altgraph" },
+  { name = "macholib", marker = "sys_platform == 'darwin'" },
+  { name = "packaging" },
+  { name = "pefile", marker = "sys_platform == 'win32'" },
+  { name = "pyinstaller-hooks-contrib" },
+  { name = "pywin32-ctypes", marker = "sys_platform == 'win32'" },
+  { name = "setuptools" },
+]
+[[package]]
+name = "pyinstaller-hooks-contrib"
+version = "2026.9"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [{ name = "packaging" }]
+[[package]]
+name = "pyrefly"
+version = "1.4.0"
+source = { registry = "https://pypi.org/simple" }
+[[package]]
+name = "pyright"
+version = "1.1.414"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [{ name = "nodeenv" }, { name = "typing-extensions" }]
+[[package]]
+name = "pytest"
+version = "9.1.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+  { name = "colorama", marker = "sys_platform == 'win32'" },
+  { name = "iniconfig" },
+  { name = "packaging" },
+  { name = "pluggy" },
+  { name = "pygments" },
+]
+[[package]]
+name = "pytest-cov"
+version = "7.1.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [{ name = "coverage" }, { name = "pluggy" }, { name = "pytest" }]
+[[package]]
+name = "python-discovery"
+version = "1.6.6"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [{ name = "filelock" }]
+[[package]]
+name = "pywin32-ctypes"
+version = "0.2.3"
+source = { registry = "https://pypi.org/simple" }
+[[package]]
+name = "ruff"
+version = "0.17.3"
+source = { registry = "https://pypi.org/simple" }
+[[package]]
+name = "setuptools"
+version = "84.2.1"
+source = { registry = "https://pypi.org/simple" }
+[[package]]
+name = "types-pyinstaller"
+version = "6.22.1.20260827"
+source = { registry = "https://pypi.org/simple" }
+[[package]]
+name = "typing-extensions"
+version = "4.16.0"
+source = { registry = "https://pypi.org/simple" }
+[[package]]
+name = "uv"
+version = "0.13.6"
+source = { registry = "https://pypi.org/simple" }
+[[package]]
+name = "versioninfo-helper"
+source = { editable = "." }
+dependencies = [
+  { name = "pyinstaller" },
+  { name = "typing-extensions", marker = "python_full_version < '3.15'" },
+]
+
+[package.dev-dependencies]
+docs = [{ name = "pdoc" }]
+lint = [{ name = "flake8" }, { name = "ruff" }]
+test = [{ name = "nox", extra = ["uv"] }, { name = "pytest-cov" }]
+typecheck = [
+  { name = "mypy" },
+  { name = "pyrefly" },
+  { name = "pyright" },
+  { name = "types-pyinstaller" },
+]
+types = [{ name = "types-pyinstaller" }]
+
+[package.metadata]
+requires-dist = [
+  { name = "pyinstaller", marker = "python_full_version == '3.11.*'", specifier = ">=5.5" },
+  { name = "pyinstaller", marker = "python_full_version == '3.12.*'", specifier = ">=5.13" },
+  { name = "pyinstaller", marker = "python_full_version == '3.13.*'", specifier = ">=5.13" },
+  { name = "pyinstaller", marker = "python_full_version == '3.14.*'", specifier = ">=5.13" },
+  { name = "pyinstaller", marker = "python_full_version >= '3.15'", specifier = ">=6.21" },
+  { name = "typing-extensions", marker = "python_full_version < '3.15'", specifier = ">=4.13.2" },
+]
+
+[package.metadata.requires-dev]
+docs = [{ name = "pdoc", specifier = ">=15.0.4" }]
+lint = [
+  { name = "flake8", specifier = ">=7.3.0" },
+  { name = "ruff", specifier = ">=0.14.6" },
+]
+test = [
+  { name = "nox", extras = [
+    "uv",
+  ], specifier = ">=2025.11.12" },
+  { name = "pytest-cov", specifier = ">=7.0.0" },
+]
+typecheck = [
+  { name = "mypy", specifier = ">=1.19.0" },
+  { name = "pyrefly", specifier = ">=0.43.1" },
+  { name = "pyright", specifier = ">=1.1.407" },
+  { name = "types-pyinstaller", specifier = ">=6.17.0.20251127" },
+]
+types = [{ name = "types-pyinstaller", specifier = ">=6.17.0.20251127" }]
+[[package]]
+name = "virtualenv"
+version = "21.15.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+  { name = "distlib" },
+  { name = "filelock" },
+  { name = "packaging" },
+  { name = "platformdirs" },
+  { name = "python-discovery" },
+]
