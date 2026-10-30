@@ -129,7 +129,6 @@ AUTO_SKIPS: list[VerCombi] = [
     VerCombi(python="3.16", pyinstaller="==5.13", typing_extensions=any),
     VerCombi(python="3.16", pyinstaller="<6.0", typing_extensions=any),
     VerCombi(python="3.16", pyinstaller="==6.0", typing_extensions=any),
-    VerCombi(python="3.16", pyinstaller="==6.21", typing_extensions=any),
     # --- cut for efficiency
     # none
     # --- above maximum

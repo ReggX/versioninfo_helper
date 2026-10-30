@@ -80,16 +80,16 @@ from PyInstaller.utils.win32.versioninfo import VSVersionInfo
 
 
 # Python 3.10 or higher
-if sys.version_info >= (3, 10):  # ruff: ignore[UP036]
+if sys.version_info >= (3, 10):  # ruff: ignore[UP036]  # pragma: no cover
     from typing import TypeAlias
-else:
+else:  # pragma: no cover
     from typing_extensions import TypeAlias  # ruff: ignore[UP035]
 
 # Python 3.11 or higher
-if sys.version_info >= (3, 11):  # ruff: ignore[UP036]
+if sys.version_info >= (3, 11):  # ruff: ignore[UP036]  # pragma: no cover
     from typing import NotRequired
     from typing import Required
-else:
+else:  # pragma: no cover
     from typing_extensions import NotRequired  # ruff: ignore[UP035]
     from typing_extensions import Required  # ruff: ignore[UP035]
 
