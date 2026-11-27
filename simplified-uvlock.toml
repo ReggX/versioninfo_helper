@@ -19,7 +19,7 @@ version = "0.17.5"
 source = { registry = "https://pypi.org/simple" }
 [[package]]
 name = "argcomplete"
-version = "3.7.2"
+version = "3.8.0"
 source = { registry = "https://pypi.org/simple" }
 [[package]]
 name = "ast-serialize"
@@ -40,7 +40,7 @@ source = { registry = "https://pypi.org/simple" }
 dependencies = [{ name = "colorama", marker = "sys_platform == 'win32'" }]
 [[package]]
 name = "coverage"
-version = "7.17.3"
+version = "7.17.5"
 source = { registry = "https://pypi.org/simple" }
 [[package]]
 name = "dependency-groups"
@@ -53,7 +53,7 @@ version = "0.4.4"
 source = { registry = "https://pypi.org/simple" }
 [[package]]
 name = "filelock"
-version = "4.2.11"
+version = "4.3.1"
 source = { registry = "https://pypi.org/simple" }
 [[package]]
 name = "flake8"
@@ -79,8 +79,9 @@ source = { registry = "https://pypi.org/simple" }
 dependencies = [{ name = "markupsafe" }]
 [[package]]
 name = "librt"
-version = "0.16.0"
+version = "0.17.0"
 source = { registry = "https://pypi.org/simple" }
+dependencies = [{ name = "mypy-extensions" }]
 [[package]]
 name = "macholib"
 version = "1.16.4"
@@ -137,7 +138,7 @@ dependencies = [
 uv = [{ name = "uv" }]
 [[package]]
 name = "packaging"
-version = "26.3"
+version = "26.4"
 source = { registry = "https://pypi.org/simple" }
 [[package]]
 name = "pathspec"
@@ -159,7 +160,7 @@ version = "2024.8.26"
 source = { registry = "https://pypi.org/simple" }
 [[package]]
 name = "platformdirs"
-version = "4.14.7"
+version = "4.14.8"
 source = { registry = "https://pypi.org/simple" }
 [[package]]
 name = "pluggy"
@@ -197,7 +198,7 @@ source = { registry = "https://pypi.org/simple" }
 dependencies = [{ name = "packaging" }]
 [[package]]
 name = "pyrefly"
-version = "1.4.1"
+version = "1.5.0"
 source = { registry = "https://pypi.org/simple" }
 [[package]]
 name = "pyright"
@@ -222,7 +223,7 @@ source = { registry = "https://pypi.org/simple" }
 dependencies = [{ name = "coverage" }, { name = "pluggy" }, { name = "pytest" }]
 [[package]]
 name = "python-discovery"
-version = "1.9.5"
+version = "1.9.7"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [{ name = "filelock" }]
 [[package]]
@@ -231,7 +232,7 @@ version = "0.2.3"
 source = { registry = "https://pypi.org/simple" }
 [[package]]
 name = "ruff"
-version = "0.17.5"
+version = "0.17.6"
 source = { registry = "https://pypi.org/simple" }
 [[package]]
 name = "setuptools"
@@ -239,7 +240,7 @@ version = "84.2.1"
 source = { registry = "https://pypi.org/simple" }
 [[package]]
 name = "types-pyinstaller"
-version = "6.22.1.20260827"
+version = "6.22.1.20261122"
 source = { registry = "https://pypi.org/simple" }
 [[package]]
 name = "typing-extensions"
@@ -247,7 +248,7 @@ version = "4.16.0"
 source = { registry = "https://pypi.org/simple" }
 [[package]]
 name = "uv"
-version = "0.13.9"
+version = "0.13.10"
 source = { registry = "https://pypi.org/simple" }
 [[package]]
 name = "versioninfo-helper"
@@ -300,7 +301,7 @@ typecheck = [
 types = [{ name = "types-pyinstaller", specifier = ">=6.17.0.20251127" }]
 [[package]]
 name = "virtualenv"
-version = "21.15.8"
+version = "21.15.13"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
   { name = "distlib" },
